@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1702951301 source:d:\electronics\bank-management-system\menu_save_check\main.c
+1703014877 source:d:\electronics\bank-management-system\menu_save_check\main.c
 	<stdio.h>
 	<stdlib.h>
 	<string.h>
