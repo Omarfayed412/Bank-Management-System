@@ -5,10 +5,14 @@
 
 void Menu(void);
 char *StrToUpper(char *str);
+int checkAccountNo(char *accStr);
 
 int main()
 {
-    Menu();
+    char accnum[20];
+    gets(accnum);
+
+    checkAccountNo(accnum);
     return 0;
 }
 
@@ -62,10 +66,28 @@ void Menu(void){
             printf("QUIT\n");
 
         else{
-            printf("%s", "Invalid option entered!\n");
+            printf("%s", "Invalid Option Entered!\n");
             flag = 0;
         }
     } while (!flag);
+}
+
+int checkAccountNo(char *accStr){
+     for (size_t i = 0; *(accStr + i) != '\0'; i++){
+        if (!(isdigit(*(accStr + i)) == 1)){
+            printf("Invalid Account Number!(Should be numbers ONLY)\n");
+            return -2;
+        }
+    }
+
+    //atoi() changes any string to integer
+    unsigned long long int accInt = atoi(accStr);
+            printf("%s\n", accStr);
+    if (accInt > 9999999999 || accInt <= 0){
+        printf("Invalid Account Number!(shouldn't be more than 10-digits and greater than 0)\n");
+        return -1;
+    }
+
 }
 
 char *StrToUpper(char *str){
