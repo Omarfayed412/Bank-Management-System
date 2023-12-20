@@ -2,12 +2,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+
+#define sizeUsers 50
 //unique username
 
 void Menu(void);
 char *StrToUpper(char *str);
 void checkAccountNo(char *accStr);
-//void SAVE();
+void SAVE(void);
+char *convertMonth(int monthnum);
 
 typedef struct
 {
@@ -28,20 +31,22 @@ typedef struct
 
 Account *constructAccount(char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd);
 void destructAccount(Account *acc);
-void retrieveData(Account *array, size_t size);
-void printUsertest(Account *user);
+void retrieveData(void);
+void printUsertest(const Account *user);
 
 //used throughout the program to calculate available places in the accounts array
 unsigned int acCount = 0;
 
+//Array of structs that carries the data of all the users
+Account accounts[sizeUsers];
+
 int main()
 {
-    //Defining an array of objects to hold the data
-    size_t size = 50;
-    Account accounts[size];
+    //1st Step in our code is retrieving all the data saved in the accounts.txt file
+    //and collecting it into an array of objects
+    retrieveData();
 
-    retrieveData(accounts, size);
-
+    //Testing the collected data
     for (size_t i = 0; i < 2; i++){
         printUsertest(accounts + i);
     }
@@ -49,7 +54,8 @@ int main()
     return 0;
 }
 
-void retrieveData(Account *array, size_t size){
+//Retrieving data from the text file and constructing the instances based on data collected
+void retrieveData(void){
     FILE *fptr = fopen("accounts.txt", "r");
     if (fptr == NULL){
         printf("Couldn't find database file!\n");
@@ -59,38 +65,38 @@ void retrieveData(Account *array, size_t size){
     char buffer[200];
     size_t i = 0, j;
 
-    while((!feof(fptr)) && i < size){
+    while((!feof(fptr)) && i < sizeUsers){
         j = 0;
         fgets(buffer, 200, fptr);
 
         char *token = strtok(buffer, ",");
         char *dateTok;
 
-        strcpy((array + i)->account_number, token);
+        strcpy((accounts + i)->account_number, token);
         while(token != NULL){
             switch(j) {
             case 1:
-                strcpy((array + i)->username, token);
+                strcpy((accounts + i)->username, token);
                 break;
 
             case 2:
-                strcpy((array + i)->email_address, token);
+                strcpy((accounts + i)->email_address, token);
                 break;
 
             case 3:
-                (array + i)->balance = strtod(token, NULL);
+                (accounts + i)->balance = strtod(token, NULL);
                 break;
 
             case 4:
-                strcpy((array + i)->mobile_number, token);
+                strcpy((accounts + i)->mobile_number, token);
                 break;
 
             case 5:
                 dateTok = strtok(token, "-");
                 //Convert the read token into integer
-                (array + i)->dateOpened.month = atoi(dateTok);
+                (accounts + i)->dateOpened.month = atoi(dateTok);
                 while (dateTok != NULL){
-                    (array + i)->dateOpened.year = atoi(dateTok);
+                    (accounts + i)->dateOpened.year = atoi(dateTok);
                     dateTok = strtok(NULL, "-");
                 }
                 break;
@@ -178,13 +184,13 @@ void checkAccountNo(char *accStr)
 }
 
 //Testing that the data is save properly
-void printUsertest(Account *user){
+void printUsertest(const Account *user){
     printf("Account number: %s\n", user->account_number);
     printf("Name: %s\n", user->username);
     printf("E-mail : %s\n", user->email_address);
     printf("Balance: %.2lf\n", user->balance);
     printf("Mobile: %s\n", user->mobile_number);
-    printf("Date Opened: %d %d\n", user->dateOpened.month, user->dateOpened.year);
+    printf("Date Opened: %s %d\n", convertMonth(user->dateOpened.month), user->dateOpened.year);
     printf("\n");
 }
 
@@ -221,4 +227,33 @@ char *StrToUpper(char *str)
     for (size_t i = 0; str[i] != '\0'; i++)
         *(str + i) = toupper(*(str + i));
     return str;
+}
+
+char *convertMonth(int monthnum){
+    switch(monthnum){
+    case 1:
+        return "January";
+    case 2:
+        return "February";
+    case 3:
+        return "March";
+    case 4:
+        return "April";
+    case 5:
+        return "May";
+    case 6:
+        return "June";
+    case 7:
+        return "July";
+    case 8:
+        return "August";
+    case 9:
+        return "September";
+    case 10:
+        return "October";
+    case 11:
+        return "November";
+    case 12:
+        return "December";
+    }
 }
