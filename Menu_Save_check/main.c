@@ -8,8 +8,11 @@
 
 void Menu(void);
 char *StrToUpper(char *str);
-void checkAccountNo(char *accStr);
-void SAVE(void);
+int checkAccountNo(char *accStr);
+int checkEmail(char *email);
+int checkName(char *name);
+int checkNumber(char *number);
+void Save(void);
 char *convertMonth(int monthnum);
 
 typedef struct
@@ -29,7 +32,7 @@ typedef struct
 
 } Account;
 
-Account *constructAccount(char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd);
+void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd);
 void destructAccount(Account *acc);
 void retrieveData(void);
 void printUsertest(const Account *user);
@@ -50,6 +53,13 @@ int main()
     for (size_t i = 0; i < 2; i++){
         printUsertest(accounts + i);
     }
+
+    Date datee;
+    datee.month = 5;
+    datee.year = 2000;
+
+    constructAccount(&accounts[2], "01125789654", "9999999999", "Amin", "Nice123@gmail.com", 12346.656, &datee);
+    Save();
 
     return 0;
 }
@@ -106,6 +116,7 @@ void retrieveData(void){
         }
         i++;
     }
+    fclose(fptr);
     acCount = i;
 }
 
@@ -170,20 +181,100 @@ void Menu(void)
     while (!flag);
 }
 
+//This function sends all the data collected in the program to the database again
+//Data is saved in the format account number, user name, email, balance, mobile number, date opened
+void Save(void){
+    char choice;
+    printf("Do you want to save changes?(Y for Yes/N for No): ");
+    scanf("%c", &choice);
+    if (choice == 'y' || choice == 'Y'){
+        FILE *fptr = fopen("accounts.txt", "w");
+        if (fptr == NULL){
+            printf("Couldn't find database file!\n");
+            exit(-1);
+        }
+
+        for (size_t i = 0; i < 3; i++){
+            fprintf(fptr, "%s,", accounts[i].account_number);
+            fprintf(fptr, "%s,", accounts[i].username);
+            fprintf(fptr, "%s,", accounts[i].email_address);
+            fprintf(fptr, "%.2lf,", accounts[i].balance);
+            fprintf(fptr, "%s,", accounts[i].mobile_number);
+            fprintf(fptr, "%d-%d\n", accounts[i].dateOpened.month, accounts[i].dateOpened.year);
+        }
+
+        fclose(fptr);
+    }
+}
 //Checking the account number errors
-void checkAccountNo(char *accStr)
+//Returns 1 if the input is valid
+//Returns 0 if the input isn't valid
+int checkAccountNo(char *accStr)
 {
+     if (strlen(accStr) != 10){
+        printf("Invalid Account Number!(Should be 10-Digits)\n");
+        return 0;
+     }
     for (size_t i = 0; *(accStr + i) != '\0'; i++)
     {
-        if (!(isdigit(*(accStr + i)) == 1))
+        if (!(isdigit(*(accStr + i)) == 1)){
             printf("Invalid Account Number!(Should be numbers ONLY)\n");
+            return 0;
+        }
     }
-    if (strlen(accStr) != 10)
-        printf("Invalid Account Number!(Should be 10-Digits)\n");
-
+    return 1;
 }
 
-//Testing that the data is save properly
+//Checking the name
+//Returns 1 if the number is valid
+//returns 0 if the number isn't valid
+int checkName(char *name){
+    for (size_t i = 0; *(name + i) != '\0'; i++){
+        if (isdigit(*(name + i))){
+            printf("Invalid Name!(Should letters ONLY)\n");
+            return 0;
+        }
+    }
+    return 1;
+}
+
+//Checking the Email
+//Returns 1 if the number is valid
+//returns 0 if the number isn't valid
+int checkEmail(char *email){
+        if (strstr(email, "@gmail.com") != NULL
+        || strstr(email, "@outlook.com") != NULL
+        || strstr(email, "@yahoo.com") != NULL
+        || strstr(email, "@alexu.edu.eg" != NULL)){
+            return 1;
+        }
+
+        else {
+            printf("Invalid Email or Not Supported Platform!\nSupported platforms :@gmail.com, @outlook.com, @alexu.edu.eg\n");
+            return 0;
+        }
+}
+
+//Checking the mobile number
+//Returns 1 if the number is valid
+//returns 0 if the number isn't valid
+int checkNumber(char *number){
+    if (strlen(number) != 11){
+        printf("Invalid Mobile Number!(Should contain 11 numbers)\n");
+        return 0;
+    }
+
+    for (size_t i = 0; *(number + i) != '\0'; i++){
+        if (isalpha(*(number + i))){
+            printf("Invalid Mobile Number!(Shouldn't contain letters)\n");
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+//Testing that the data is saved properly
 void printUsertest(const Account *user){
     printf("Account number: %s\n", user->account_number);
     printf("Name: %s\n", user->username);
@@ -195,15 +286,8 @@ void printUsertest(const Account *user){
 }
 
 //Will be mainly used in ADD function
-Account *constructAccount(char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd)
+void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd)
 {
-    //Reserving memory in the heap for new instance
-    Account *acc = malloc(sizeof(Account));
-    if (acc == NULL)
-    {
-        printf("No enough space!\n");
-        return NULL;
-    }
     //Copying the arguments into the new instance arguments
     strcpy(acc->account_number, accNum);
     strcpy(acc->mobile_number, mobile);
@@ -212,8 +296,6 @@ Account *constructAccount(char *mobile, char *accNum, char *name, char *email, d
     acc->balance = balanceNum;
     acc->dateOpened.month = dateOpnd->month;
     acc->dateOpened.year = dateOpnd->year;
-
-    return acc;
 }
 
 //Will be used before closing the program
@@ -222,6 +304,7 @@ void destructAccount(Account *acc)
     free(acc);
 }
 
+//Function that changes all the characters in a string to UPPER case
 char *StrToUpper(char *str)
 {
     for (size_t i = 0; str[i] != '\0'; i++)
