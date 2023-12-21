@@ -14,6 +14,7 @@ int checkName(char *name);
 int checkNumber(char *number);
 void Save(void);
 char *convertMonth(int monthnum);
+void advSearch(void);
 
 typedef struct
 {
@@ -35,7 +36,7 @@ typedef struct
 void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd);
 void destructAccount(Account *acc);
 void retrieveData(void);
-void printUsertest(const Account *user);
+void printUser(const Account *user);
 
 //used throughout the program to calculate available places in the accounts array
 unsigned int acCount = 0;
@@ -50,18 +51,49 @@ int main()
     retrieveData();
 
     //Testing the collected data
-    for (size_t i = 0; i < 2; i++){
-        printUsertest(accounts + i);
+    for (size_t i = 0; i < 5; i++){
+        printUser(accounts + i);
     }
 
-    Date datee;
-    datee.month = 5;
-    datee.year = 2000;
+    //Date datee;
+    //datee.month = 5;
+    //datee.year = 2000;
 
-    constructAccount(&accounts[2], "01125789654", "9999999999", "Amin", "Nice123@gmail.com", 12346.656, &datee);
-    Save();
-
+    //constructAccount(&accounts[2], "01125789654", "9999999999", "Amin", "Nice123@gmail.com", 12346.656, &datee);
+    //Save();
+    Menu();
     return 0;
+}
+
+//Search the user names using strstr function
+//Sets the upper case as a reference to avoid case sensitivity
+void advSearch(void){
+    char search_key[20];
+    char buffer[20];
+    char choice = 'y';
+
+    do {
+        printf("%s", "Enter the search keyword: ");
+        gets(search_key);
+
+        int found = 0;
+
+        printf("%s", "Search results:\n\n");
+        for (size_t i = 0; i < 5; i++){
+            strcpy(buffer, (accounts + i)->username);
+            if (strstr(StrToUpper(buffer), StrToUpper(search_key)) != NULL){
+                printUser((accounts + i));
+                found = 1;
+            }
+        }
+
+        if (found == 0){
+            printf("No matches are found!\n");
+        }
+        printf("Do you want to search for something else?(Y/N): ");
+        scanf("%c", &choice);
+        getchar();
+    } while (choice == 'y' || choice == 'Y');
 }
 
 //Retrieving data from the text file and constructing the instances based on data collected
@@ -127,15 +159,14 @@ void Menu(void)
 {
     char choice[20];
     int flag;
-
-    printf("%s", "Please select one of the following options(Enter the EXACT name of desired option):\n");
-    printf("%s", " - ADD\n - DELETE\n - MODIFY\n - SEARCH\n - ADVANCED SEARCH\n - WITHDRAW\n");
-    printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - QUIT\n");
-
     do
     {
-        flag = 1;
-        printf("%s", "Desired option: ");
+        flag = 0;
+        printf("%s", "\t******** Main Menu (0o0) ********\n");
+        printf("%s", "Please select one of the following options(Enter the EXACT name of desired option):\n");
+        printf("%s", " - ADD\n - DELETE\n - MODIFY\n - SEARCH\n - ADVANCED SEARCH\n - WITHDRAW\n");
+        printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - QUIT\n");
+        printf("Desired option: ");
         gets(choice);
         StrToUpper(choice);
 
@@ -152,7 +183,7 @@ void Menu(void)
             printf("SEARCH\n");
 
         else if (strcmp(choice, "ADVANCED SEARCH") == 0)
-            printf("ADVANCED SEARCH\n");
+            advSearch();
 
         else if (strcmp(choice, "WITHDRAW") == 0)
             printf("WITHDRAW\n");
@@ -175,7 +206,7 @@ void Menu(void)
         else
         {
             printf("%s", "Invalid Option Entered!\n");
-            flag = 0;
+            flag = 1;
         }
     }
     while (!flag);
@@ -189,10 +220,6 @@ void Save(void){
     scanf("%c", &choice);
     if (choice == 'y' || choice == 'Y'){
         FILE *fptr = fopen("accounts.txt", "w");
-        if (fptr == NULL){
-            printf("Couldn't find database file!\n");
-            exit(-1);
-        }
 
         for (size_t i = 0; i < 3; i++){
             fprintf(fptr, "%s,", accounts[i].account_number);
@@ -206,6 +233,7 @@ void Save(void){
         fclose(fptr);
     }
 }
+
 //Checking the account number errors
 //Returns 1 if the input is valid
 //Returns 0 if the input isn't valid
@@ -275,7 +303,7 @@ int checkNumber(char *number){
 }
 
 //Testing that the data is saved properly
-void printUsertest(const Account *user){
+void printUser(const Account *user){
     printf("Account number: %s\n", user->account_number);
     printf("Name: %s\n", user->username);
     printf("E-mail : %s\n", user->email_address);
