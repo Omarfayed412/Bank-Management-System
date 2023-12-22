@@ -4,17 +4,16 @@
 #include <ctype.h>
 
 #define sizeUsers 50
-//unique username
 
-void Menu(void);
+void  Menu(void);
 char *StrToUpper(char *str);
-int checkAccountNo(char *accStr);
-int checkEmail(char *email);
-int checkName(char *name);
-int checkNumber(char *number);
-void Save(void);
+int   checkAccountNo(char *accStr);
+int   checkEmail(char *email);
+int   checkName(char *name);
+int   checkNumber(char *number);
+void  Save(void);
 char *convertMonth(int monthnum);
-void advSearch(void);
+void  advSearch(void);
 
 typedef struct
 {
