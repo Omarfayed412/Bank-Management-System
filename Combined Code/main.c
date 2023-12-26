@@ -52,7 +52,7 @@ void Deposit(void);
 void WithDraw(void);
 void Transfer(void);
 void Report(void);
-void sort();
+void Sort(void);
 
 ///Helping functions for struct and arrays manipulation
 int   checkAccountNo(char *accStr);
@@ -617,7 +617,7 @@ void Menu(void)
             Report();
 
         else if (strcmp(choice, "PRINT") == 0)
-            sort();
+            Sort();
 
         else if (strcmp(choice, "QUIT") == 0)
         {
@@ -1048,7 +1048,8 @@ char *convertMonth(int monthnum)
         return "December";
     }
 }
-void sort()
+
+void Sort(void)
 {
   char c;
   int counter=0,flag=0;
