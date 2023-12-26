@@ -52,6 +52,7 @@ void Deposit(void);
 void WithDraw(void);
 void Transfer(void);
 void Report(void);
+void sort();
 
 ///Helping functions for struct and arrays manipulation
 int   checkAccountNo(char *accStr);
@@ -62,6 +63,10 @@ int   checkBalance(char *BalStr);
 int   loadAccIndex(char *accountNumber);
 char *convertMonth(int monthnum);
 char *StrToUpper(char *str);
+int * sortByData();
+void fillArray(int *ptr);
+int* sortByBalance();
+int* sortByName();
 
 void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd);
 void destructAccount(Account *acc);
@@ -612,7 +617,7 @@ void Menu(void)
             Report();
 
         else if (strcmp(choice, "PRINT") == 0)
-            printf("PRINT\n");
+            sort();
 
         else if (strcmp(choice, "QUIT") == 0)
         {
@@ -925,30 +930,31 @@ int checkName(char *name)
 ///Checking the Email
 ///Returns 1 if the number is valid
 ///returns 0 if the number isn't valid
-int checkEmail(char *email)
-{
-    if (strstr(email, "@gmail.com") != NULL
-            || strstr(email, "@outlook.com") != NULL
-            || strstr(email, "@yahoo.com") != NULL
-            || strstr(email, "@alexu.edu.eg" != NULL))
-    {
-        for (size_t i = 0; *(email + i) != '\0'; i++)
-        {
-            if (*(email + i) == ',')
-            {
-                printf("Invalid Email shouldn't contain ','!\n");
-                return 0;
-            }
-        }
-        return 1;
-    }
+int checkEmail(char *email){
+        if (!(strstr(email, "@gmail.com") == NULL)){
 
-    else
-    {
-        printf("Invalid Email or Not Supported Platform!\nSupported platforms :@gmail.com, @outlook.com, @alexu.edu.eg\n");
-        return 0;
-    }
+            return 1;
+        }
+        if (!(strstr(email, "@alexu.edu.eg") == NULL)){
+
+            return 1;
+        }
+        if (!(strstr(email, "@outlook.com") == NULL)){
+
+            return 1;
+        }
+
+        if (!(strstr(email, "@yahoo.com") == NULL)){
+
+            return 1;
+        }
+
+        else {
+            printf("Invalid E-mail!!!\n");
+            return 0;
+        }
 }
+
 
 ///Checking the mobile number
 ///Returns 1 if the number is valid
@@ -1042,3 +1048,176 @@ char *convertMonth(int monthnum)
         return "December";
     }
 }
+void sort()
+{
+  char c;
+  int counter=0,flag=0;
+  /// pointer of the index of each account
+  int *Indices = NULL;
+ do{
+
+  printf("%s","please choose the sorting type[ (N) to be sorted by name, (B) to be sorted by balance , (D) to be sorted by date : ");
+  scanf("%c", &c);
+  getchar();
+  if(c == 'N' || c == 'n'){
+       Indices = sortByName();
+       printf("%s","Enter [A] to print from (A to Z) or  [Z] to print from (Z to A)   :");
+      do{
+       scanf("%c",&c);
+       getchar();
+       /// print the data sorted by names from A to Z
+       if(c == 'A'||c == 'a')
+           {
+           for( counter = 0; counter<acCount ; ++counter)
+               printUser(&accounts[Indices[counter]]);
+           }
+       /// print the data sorted by names from Z to A
+       else if (c == 'Z' || c == 'z')
+              {
+            for( counter = acCount-1; counter>=0 ; --counter)
+               printUser(&accounts[Indices[counter]]);
+              }
+        else
+        {
+            printf("%s","Invalid input!!!\nEnter [A] to print from (A to Z) or  [Z] to print from (Z to A)   :");c=NULL;
+        }
+                           }while(c==NULL);}
+
+      else if (c == 'B' || c == 'b')
+         { Indices = sortByBalance();
+           printf("in Descending[D] or Ascending[A] order ? ::  ");
+           do{
+           scanf("%c",&c);
+           getchar();
+           /// print the balances of the accounts in Ascending order
+           if(c == 'A' || c == 'a')
+              for( counter = acCount-1; counter>=0 ; --counter)
+                  printUser(&accounts[Indices[counter]]);
+           /// print the balances of the accounts in Descending order
+           else if (c == 'd' || c == 'D')
+              for( counter = 0; counter<acCount ; ++counter)
+                  printUser(&accounts[Indices[counter]]);
+           else
+           {printf("%s","Invalid input!!!\nEnter [D] for Descending or [A] Ascending order:  ");c=NULL;}
+         }while(c == NULL);}
+      else if (c == 'D' || c == 'd')
+         {Indices = sortByData();
+          printf("%s","Enter [N] to be sorted from the newest client , [P] to be sorted from the our past client : ");
+          do{
+            scanf("%c",&c);
+            getchar();
+            if(c == 'N' || c == 'n')
+
+              for( counter = acCount-1; counter>=0 ; --counter)
+                  printUser(&accounts[Indices[counter]]);
+
+
+      else if (c == 'P' || c == 'p')
+           for( counter = 0; counter<acCount ; ++counter)
+                 printUser(&accounts[Indices[counter]]);
+
+
+         else
+            {printf("%s","Invalid input!!!\nEnter [N] to be sorted from the newest client , [P] to be sorted from the our past client : ");c=NULL;}
+         }while(c==NULL);
+      }
+  else
+       {
+        printf("%s","Invalid input!!");
+        flag=1;}
+
+printf("%s","Do you want to print data in other sorted manners ??( Y for yes , N for No) :: ");
+scanf("%c",&c);
+getchar();
+}while(flag==1||c=='Y'||c=='y');}
+int* sortByName()
+  {
+    int *Indices = malloc(sizeof(int)*acCount);
+    fillArray(Indices);
+    int counter_1 = 0,counter_2 = 0,temp;
+    /// bubble sorting in A to Z
+    for(counter_1 = 0;counter_1<acCount-1;++counter_1)
+        {
+         for(counter_2=0;counter_2<acCount-counter_1-1;++counter_2)
+               {
+                 if(strcmp(accounts[*(Indices+counter_2)].username,accounts[*(Indices+counter_2+1)].username)>0)
+                     {
+
+                       temp = *(Indices+counter_2);
+                       *(Indices+counter_2) = *(Indices+counter_2+1);
+                       *(Indices+counter_2+1) = temp;
+                     }
+                }
+        }
+    return Indices;
+  }
+int* sortByBalance()
+{
+      int *Indices = malloc(sizeof(int)*acCount);
+      fillArray(Indices);
+      int counter_1 = 0,counter_2 = 0,temp;
+/// bubble sorting in A to Z
+      for(counter_1 = 0;counter_1<acCount-1;++counter_1)
+          {
+             for(counter_2 = 0;counter_2<acCount-counter_1-1;++counter_2)
+                 {
+                  if(accounts[*(Indices+counter_2)].balance<accounts[*(Indices+counter_2+1)].balance)
+                       {
+
+                          temp = *(Indices+counter_2);
+                          *(Indices+counter_2) = *(Indices+counter_2+1);
+                          *(Indices+counter_2+1) = temp;
+                       }
+                 }
+         }
+      return Indices;
+}
+/// fill a default array by number from one
+void fillArray(int *ptr)
+    {
+      for(int counter=0;counter<acCount;++counter)
+    {
+   *(ptr+counter)=counter;
+    }
+    }
+int * sortByData()
+   {
+    int *Indices = malloc(sizeof(int)*acCount);
+    fillArray(Indices);
+    int counter_1 = 0,counter_2 = 0,temp;
+    /// bubble sorting to the years from the oldest
+    for(counter_1 = 0;counter_1<acCount-1;++counter_1)
+        {
+         for(counter_2 = 0;counter_2<acCount-counter_1-1;++counter_2)
+               { int date_1,date_2;
+                 date_1 = accounts[*(Indices+counter_2)].dateOpened.month;
+                 date_2 = accounts[*(Indices+counter_2+1)].dateOpened.month;
+                // printf("date_1 : %d\ndate_2 : %d\n",date_1,date_2);
+                 if(date_2<date_1)
+                     {
+                       temp = *(Indices+counter_2);
+                       *(Indices+counter_2) = *(Indices+counter_2+1);
+                       *(Indices+counter_2+1) = temp;
+                     }
+                }
+        }
+    /// bubble sorting for the months
+     for(counter_1 = 0;counter_1<acCount-1;++counter_1)
+        {
+         for(counter_2 = 0;counter_2<acCount-counter_1-1;++counter_2)
+               { int date_1,date_2;
+                 date_1 = accounts[*(Indices+counter_2)].dateOpened.year;
+                 date_2 = accounts[*(Indices+counter_2+1)].dateOpened.year;
+                // printf("date_1 : %d\ndate_2 : %d\n",date_1,date_2);
+                 if(date_2<date_1)
+                     {
+                       temp = *(Indices+counter_2);
+                       *(Indices+counter_2) = *(Indices+counter_2+1);
+                       *(Indices+counter_2+1) = temp;
+                     }
+                }
+        }
+
+    return Indices;
+   }
+
