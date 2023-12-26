@@ -838,15 +838,6 @@ int checkNumber(char *number){
 }
 
 ///Testing that the data is saved properly
-void printUser(const Account *user){
-    printf("Account number: %s\n", user->account_number);
-    printf("Name: %s\n", user->username);
-    printf("E-mail : %s\n", user->email_address);
-    printf("Balance: %.2lf\n", user->balance);
-    printf("Mobile: %s\n", user->mobile_number);
-    printf("Date Opened: %s %d\n", convertMonth(user->dateOpened.month), user->dateOpened.year);
-    printf("\n");
-}
 
 ///Will be mainly used in ADD function
 void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd)
