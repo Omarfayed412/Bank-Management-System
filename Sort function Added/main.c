@@ -82,7 +82,6 @@ int main()
     ///1st Step in our code is retrieving all the data saved in the accounts.txt file
     ///and collecting it into an array of objects
     retrieveData();
-
     //Testing the collected data
     /*for (size_t i = 0; i < acCount; i++){
         printUser(accounts + i);
@@ -810,15 +809,26 @@ int checkName(char *name){
 ///Returns 1 if the number is valid
 ///returns 0 if the number isn't valid
 int checkEmail(char *email){
-        if (strstr(email, "@gmail.com") != NULL
-        || strstr(email, "@outlook.com") != NULL
-        || strstr(email, "@yahoo.com") != NULL
-        || strstr(email, "@alexu.edu.eg" != NULL)){
+        if (!(strstr(email, "@gmail.com") == NULL)){
+
+            return 1;
+        }
+        if (!(strstr(email, "@alexu.edu.eg") == NULL)){
+
+            return 1;
+        }
+        if (!(strstr(email, "@outlook.com") == NULL)){
+
+            return 1;
+        }
+
+        if (!(strstr(email, "@yahoo.com") == NULL)){
+
             return 1;
         }
 
         else {
-            printf("Invalid Email or Not Supported Platform!\nSupported platforms :@gmail.com, @outlook.com, @alexu.edu.eg\n");
+            printf("Invalid E-mail!!!\n");
             return 0;
         }
 }
@@ -1047,21 +1057,7 @@ int * sortByData()
     fillArray(Indices);
     int counter_1 = 0,counter_2 = 0,temp;
     /// bubble sorting to the years from the oldest
-    for(counter_1 = 0;counter_1<acCount-1;++counter_1)
-        {
-         for(counter_2 = 0;counter_2<acCount-counter_1-1;++counter_2)
-               { int date_1,date_2;
-                 date_1 = accounts[*(Indices+counter_2)].dateOpened.month;
-                 date_2 = accounts[*(Indices+counter_2+1)].dateOpened.month;
-                // printf("date_1 : %d\ndate_2 : %d\n",date_1,date_2);
-                 if(date_2<date_1)
-                     {
-                       temp = *(Indices+counter_2);
-                       *(Indices+counter_2) = *(Indices+counter_2+1);
-                       *(Indices+counter_2+1) = temp;
-                     }
-                }
-        }
+
     /// bubble sorting for the months
      for(counter_1 = 0;counter_1<acCount-1;++counter_1)
         {
@@ -1078,6 +1074,28 @@ int * sortByData()
                      }
                 }
         }
+           for(counter_1 = 0;counter_1<acCount-1;++counter_1)
+        {
+         for(counter_2 = 0;counter_2<acCount-counter_1-1;++counter_2)
+               { int date_1,date_2;
+                 date_1 = accounts[*( Indices + counter_2)].dateOpened.year;
+                 date_2 = accounts[*( Indices + counter_2 + 1)].dateOpened.year;
+                // printf("date_1 : %d\ndate_2 : %d\n",date_1,date_2);
+                 if(date_2 == date_1)
+                     {
+                       date_1 = accounts[*( Indices + counter_2)].dateOpened.month;
+                       date_2 = accounts[*( Indices + counter_2 + 1)].dateOpened.month;
+                       if(date_2<date_1)
+                          {
+                            temp = *(Indices+counter_2);
+                           *(Indices+counter_2) = *(Indices+counter_2+1);
+                           *(Indices+counter_2 + 1) = temp;
+                          }
+                     }
+                }
+        }
+
+
 
     return Indices;
    }
