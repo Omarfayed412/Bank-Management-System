@@ -51,12 +51,14 @@ void Query(void);
 void Deposit(void);
 void WithDraw(void);
 void Transfer(void);
+void Report(void);
 
 ///Helping functions for struct and arrays manipulation
 int   checkAccountNo(char *accStr);
 int   checkEmail(char *email);
 int   checkName(char *name);
 int   checkNumber(char *number);
+int   checkBalance(char *BalStr);
 int   loadAccIndex(char *accountNumber);
 char *convertMonth(int monthnum);
 char *StrToUpper(char *str);
@@ -87,6 +89,63 @@ int main()
     return 0;
 }
 
+
+void Report(void)
+{
+    char account_number[11];
+    char fileName[16];
+    char buf[100];
+    char n;
+    int count=0;
+    int i;
+
+    do
+    {
+        printf("%s", "enter your account number:");
+        gets(account_number);
+    }
+    while (checkAccountNo(account_number) == 0); //acc num invalid
+
+    if(AccountExistenceCheck(account_number) == 0)
+    {
+        sprintf(fileName, "%s.txt", account_number);
+        int index=loadAccIndex(account_number);
+        accounts[index].f_report=fopen(fileName, "r");
+        for(i=0; !feof(accounts[index].f_report); i++)
+        {
+            n = fgetc(accounts[index].f_report);
+            if(n == '\n')
+                count++;
+
+        }
+
+        fseek(accounts[index].f_report, 0, SEEK_SET);
+
+        if(count < 5 || count == 5)
+        {
+            for(i=0; i<count; i++)
+            {
+                fgets(buf, 99, accounts[index].f_report);
+                printf("%s", buf);
+            }
+        }
+        else
+        {
+            for(i=0; i < (count - 5); i++)
+            {
+                fgets(buf, 99, accounts[index].f_report);
+
+            }
+            for(i=0; i < 5; i++)
+            {
+                fgets(buf, 99, accounts[index].f_report);
+                printf("%s", buf);
+            }
+        }
+        fclose(accounts[index].f_report);
+    }
+}
+
 void readUser(void)
 {
     int i = 0;
@@ -115,7 +174,8 @@ void Login(void)
 
     readUser();
 
-    do {
+    do
+    {
         printf("Enter username: ");
         gets(username);
         printf("Enter password: ");
@@ -134,17 +194,20 @@ void Login(void)
         if (!flag)
             printf("Incorrect Username or Password!\n");
 
-    } while (!flag);
+    }
+    while (!flag);
 }
 
 
 void deleteAccount(void)
 {
     int accountNumber;
-    do {
-    printf("Enter account number to delete: ");
-    scanf("%d", &accountNumber);
-    }while(checkAccountNo(accountNumber) == 0 || AccountExistenceCheck(accountNumber) == 0);
+    do
+    {
+        printf("Enter account number to delete: ");
+        scanf("%d", &accountNumber);
+    }
+    while(checkAccountNo(accountNumber) == 0 || AccountExistenceCheck(accountNumber) == 0);
 
     //locate index
     //account arguments = 0
@@ -238,33 +301,39 @@ void Modify(void)
 
 ///Search the user names using strstr function
 ///Sets the upper case as a reference to avoid case sensitivity
-void advSearch(void){
+void advSearch(void)
+{
     char search_key[20];
     char buffer[20];
     char choice = 'y';
 
-    do {
+    do
+    {
         printf("%s", "Enter the search keyword: ");
         gets(search_key);
 
         int found = 0;
 
         printf("%s", "Search results:\n\n");
-        for (size_t i = 0; i < acCount; i++){
+        for (size_t i = 0; i < acCount; i++)
+        {
             strcpy(buffer, (accounts + i)->username);
-            if (strstr(StrToUpper(buffer), StrToUpper(search_key)) != NULL){
+            if (strstr(StrToUpper(buffer), StrToUpper(search_key)) != NULL)
+            {
                 printUser((accounts + i));
                 found = 1;
             }
         }
 
-        if (found == 0){
+        if (found == 0)
+        {
             printf("No matches are found!\n");
         }
         printf("Do you want to search for something else?(Y/N): ");
         scanf("%c", &choice);
         getchar();
-    } while (choice == 'y' || choice == 'Y');
+    }
+    while (choice == 'y' || choice == 'Y');
 }
 
 void Query(void)
@@ -350,9 +419,11 @@ int AccountExistenceCheck (char *accountNumber)
 }
 
 ///Retrieving data from the text file and constructing the instances based on data collected
-void retrieveData(void){
+void retrieveData(void)
+{
     FILE *fptr = fopen("accounts.txt", "r");
-    if (fptr == NULL){
+    if (fptr == NULL)
+    {
         printf("Couldn't find database file!\n");
         exit(-1);
     }
@@ -360,7 +431,8 @@ void retrieveData(void){
     char buffer[200];
     size_t i = 0, j;
 
-    while((!feof(fptr)) && i < sizeUsers){
+    while((!feof(fptr)) && i < sizeUsers)
+    {
         j = 0;
         fgets(buffer, 200, fptr);
 
@@ -368,8 +440,10 @@ void retrieveData(void){
         char *dateTok;
 
         strcpy((accounts + i)->account_number, token);
-        while(token != NULL){
-            switch(j) {
+        while(token != NULL)
+        {
+            switch(j)
+            {
             case 1:
                 strcpy((accounts + i)->username, token);
                 break;
@@ -390,7 +464,8 @@ void retrieveData(void){
                 dateTok = strtok(token, "-");
                 //Convert the read token into integer
                 (accounts + i)->dateOpened.month = atoi(dateTok);
-                while (dateTok != NULL){
+                while (dateTok != NULL)
+                {
                     (accounts + i)->dateOpened.year = atoi(dateTok);
                     dateTok = strtok(NULL, "-");
                 }
@@ -477,9 +552,9 @@ void Add(void)
         data.year = tm.tm_year + 1900;
         data.month = tm.tm_mon + 1;
         /// making an instant of the data
-   //     Account *new_client = malloc(sizeof(Account));
-     //   ConstructAccount(new_client, mobile_number, account_number, username, email_adresss, &balance, &data);
-         /// increasing the number of accounts
+        //     Account *new_client = malloc(sizeof(Account));
+        //   ConstructAccount(new_client, mobile_number, account_number, username, email_adresss, &balance, &data);
+        /// increasing the number of accounts
         ++acCount;
         constructAccount(&accounts[acCount - 1], mobile_number, account_number, username, email_adresss, balance, &data);
         Save();
@@ -534,12 +609,13 @@ void Menu(void)
             Transfer();
 
         else if (strcmp(choice, "REPORT") == 0)
-            printf("REPORT\n");
+            Report();
 
         else if (strcmp(choice, "PRINT") == 0)
             printf("PRINT\n");
 
-        else if (strcmp(choice, "QUIT") == 0){
+        else if (strcmp(choice, "QUIT") == 0)
+        {
             printf("Thank you for using our system :)\n Exiting...\n");
             return 0;
         }
@@ -554,15 +630,18 @@ void Menu(void)
 
 ///This function sends all the data collected in the program to the database again
 ///Data is saved in the format account number, user name, email, balance, mobile number, date opened
-void Save(void){
+void Save(void)
+{
     char choice;
     printf("Do you want to save changes?(Y for Yes/N for No): ");
     scanf("%c", &choice);
     getchar();
-    if (choice == 'y' || choice == 'Y'){
+    if (choice == 'y' || choice == 'Y')
+    {
         FILE *fptr = fopen("accounts.txt", "w");
 
-        for (size_t i = 0; i < acCount; i++){
+        for (size_t i = 0; i < acCount; i++)
+        {
             fprintf(fptr, "%s,", accounts[i].account_number);
             fprintf(fptr, "%s,", accounts[i].username);
             fprintf(fptr, "%s,", accounts[i].email_address);
@@ -579,7 +658,8 @@ void Transfer(void)
 {
     char account_number1[11];
     char account_number2[11];
-    int amount;
+    char amount1[sizeof(double)];
+    double amount2;
     char choicee;
     char fileName1[16];
     char fileName2[16];
@@ -606,52 +686,59 @@ void Transfer(void)
             int index1 = loadAccIndex(account_number1);
             int index2 = loadAccIndex(account_number2);
 
-             do
+            do
             {
+                do
+                {
                 printf("%s", "Enter an amount to transfer: ");
-                scanf("%d", &amount);
+                gets(amount1);
 
-                if(amount > accounts[index1].balance)
+
+                }while(checkBalance(amount1)==0);
+                amount2=strtod(amount1,NULL);
+
+
+                if(amount2 > accounts[index1].balance)
                 {
                     printf("You only have %lf$ in your account\n", accounts[index1].balance);
                     flag = 1;
                     break;
                 }
             }
-            while(amount < 0);
+            while(amount2 < 0);
 
             if(flag == 0)
             {
-                    accounts[index1].balance -= amount;
-                    accounts[index2].balance += amount;
-                    sprintf(fileName1, "%s.txt", accounts[index1].account_number);
-                    sprintf(fileName2, "%s.txt", accounts[index2].account_number);
-                    accounts[index1].f_report = fopen(fileName1, "a");
-                    if(accounts[index1].f_report == NULL)
-                    {
-                        printf("Couldn't Find File!\n");
-                        exit(-1);
-                    }
+                accounts[index1].balance -= amount2;
+                accounts[index2].balance += amount2;
+                sprintf(fileName1, "%s.txt", accounts[index1].account_number);
+                sprintf(fileName2, "%s.txt", accounts[index2].account_number);
+                accounts[index1].f_report = fopen(fileName1, "a");
+                if(accounts[index1].f_report == NULL)
+                {
+                    printf("Couldn't Find File!\n");
+                    exit(-1);
+                }
 
-                    fprintf(accounts[index1].f_report, "You sent %d$ to %s", amount, account_number2);
-                    fclose(accounts[index1].f_report);
+                fprintf(accounts[index1].f_report, "You sent %lf$ to %s", amount2, account_number2);
+                fclose(accounts[index1].f_report);
 
-                    accounts[index2].f_report = fopen(fileName2, "a");
-                    if(accounts[index2].f_report == NULL)
-                    {
-                        printf("Couldn't Find File!\n");
-                        exit(-1);
-                    }
-                    fprintf(accounts[index2].f_report, "You received %d$ from %s", amount, account_number2);
-                    fclose(accounts[index2].f_report);
+                accounts[index2].f_report = fopen(fileName2, "a");
+                if(accounts[index2].f_report == NULL)
+                {
+                    printf("Couldn't Find File!\n");
+                    exit(-1);
+                }
+                fprintf(accounts[index2].f_report, "You received %lf$ from %s", amount2, account_number2);
+                fclose(accounts[index2].f_report);
 
-                    Save();
-                    printf("Transaction Successful :)\n");
+                Save();
+                printf("Transaction Successful :)\n");
 
-                    }
-                    else
-                    printf("Transaction Failed!\n");
-             }
+            }
+            else
+                printf("Transaction Failed!\n");
+        }
         printf("\nDo you want to Transfer again?(Y/N): ");
         scanf("%c", &choicee);
         getchar();
@@ -662,7 +749,8 @@ void Transfer(void)
 void Deposit(void)
 {
     char account_number[11];
-    int amount;
+    char amount1[sizeof(double)];
+    double amount2;
     char choice;
     char fileName[16];
     do
@@ -680,24 +768,31 @@ void Deposit(void)
         {
             do
             {
-                printf("%s", "Enter the amount needs to be deposited (Max limit = 10000$): ");
-                scanf("%d", &amount);
-                getchar();
+
+                do
+                {
+                    printf("%s", "Enter the amount needs to be deposited (Max limit = 10000$): ");
+                    gets(amount1);
+                }
+                while(checkBalance(amount1)==0);
+                amount2=strtod(amount1,NULL);
+
             }
-            while(amount > 10000 || amount <= 0);
+            while(amount2 > 10000 || amount2 <= 0);
+
 
             int index = loadAccIndex(account_number);
-            accounts[index].balance += amount;
+            accounts[index].balance += amount2;
             sprintf(fileName, "%s.txt", accounts[index].account_number);
             accounts[index].f_report = fopen(fileName, "a");
 
             if (accounts[index].f_report == NULL)
-                {
-                    printf("Couldn't find file!\n");
-                    exit(-1);
-                }
+            {
+                printf("Couldn't find file!\n");
+                exit(-1);
+            }
 
-            fprintf(accounts[index].f_report, "Deposit %d$\n", amount);
+            fprintf(accounts[index].f_report, "Deposit %lf$\n", amount2);
             fclose(accounts[index].f_report);
             printf("Transaction successful :)\n");
             Save();
@@ -716,7 +811,8 @@ void Deposit(void)
 void WithDraw(void)
 {
     char account_number[11];
-    int amount;
+    char amount1[sizeof(double)];
+    double amount2;
     char choice;
     char fileName[16];
     do
@@ -735,13 +831,17 @@ void WithDraw(void)
 
             do
             {
-                printf("%s","Enter an amount to withdraw(Max limit=10,000$/transaction): ");
-                scanf("%d",&amount);
-                getchar();
-            }
-            while(amount > 10000 || amount > accounts[index].balance || amount <= 0);
+                do
+                {
+                    printf("%s","Enter an amount to withdraw(Max limit=10,000$/transaction): ");
+                     gets(amount1);
 
-            accounts[index].balance -= amount;
+                }while(checkBalance(amount1)==0);
+                amount2=strtod(amount1,NULL);
+            }
+            while(amount2 > 10000 || amount2 > accounts[index].balance || amount2 <= 0);
+
+            accounts[index].balance -= amount2;
 
             sprintf(fileName, "%s.txt", accounts[index].account_number);
             accounts[index].f_report = fopen(fileName,"a");
@@ -751,7 +851,7 @@ void WithDraw(void)
                 printf("Couldn't Find File!\n");
                 exit(-1);
             }
-            fprintf(accounts[index].f_report,"Withdraw %d$\n",amount);
+            fprintf(accounts[index].f_report,"Withdraw %lf$\n",amount2);
             fclose(accounts[index].f_report);
 
             Save();
@@ -774,14 +874,32 @@ void WithDraw(void)
 ///Returns 0 if the input isn't valid
 int checkAccountNo(char *accStr)
 {
-     if (strlen(accStr) != 10){
+    if (strlen(accStr) != 10)
+    {
         printf("Invalid Account Number!(Should be 10-Digits)\n");
         return 0;
-     }
+    }
     for (size_t i = 0; *(accStr + i) != '\0'; i++)
     {
-        if (!(isdigit(*(accStr + i)) == 1)){
+        if (!(isdigit(*(accStr + i)) == 1))
+        {
             printf("Invalid Account Number!(Should be numbers ONLY)\n");
+            return 0;
+        }
+    }
+    return 1;
+}
+
+///Checking the balance errors
+///Returns 1 if the input is valid
+///Returns 0 if the input isn't valid
+int checkBalance(char *BalStr)
+{
+    for (size_t i = 0; *(BalStr + i) != '\0'; i++)
+    {
+        if (!(isdigit(*(BalStr + i)) == 1))
+        {
+            printf("Invalid Balance!(Should be numbers ONLY)\n");
             return 0;
         }
     }
@@ -791,10 +909,13 @@ int checkAccountNo(char *accStr)
 ///Checking the name
 ///Returns 1 if the number is valid
 ///returns 0 if the number isn't valid
-int checkName(char *name){
-    for (size_t i = 0; *(name + i) != '\0'; i++){
-        if (isdigit(*(name + i))){
-            printf("Invalid Name!(Should letters ONLY)\n");
+int checkName(char *name)
+{
+    for (size_t i = 0; *(name + i) != '\0'; i++)
+    {
+        if (isdigit(*(name + i)) ||  *(name + i) == ',')
+        {
+            printf("Invalid Name!(Should letters ONLY and not contains ',')\n");
             return 0;
         }
     }
@@ -804,32 +925,47 @@ int checkName(char *name){
 ///Checking the Email
 ///Returns 1 if the number is valid
 ///returns 0 if the number isn't valid
-int checkEmail(char *email){
-        if (strstr(email, "@gmail.com") != NULL
-        || strstr(email, "@outlook.com") != NULL
-        || strstr(email, "@yahoo.com") != NULL
-        || strstr(email, "@alexu.edu.eg" != NULL)){
-            return 1;
+int checkEmail(char *email)
+{
+    if (strstr(email, "@gmail.com") != NULL
+            || strstr(email, "@outlook.com") != NULL
+            || strstr(email, "@yahoo.com") != NULL
+            || strstr(email, "@alexu.edu.eg" != NULL))
+    {
+        for (size_t i = 0; *(email + i) != '\0'; i++)
+        {
+            if (*(email + i) == ',')
+            {
+                printf("Invalid Email shouldn't contain ','!\n");
+                return 0;
+            }
         }
+        return 1;
+    }
 
-        else {
-            printf("Invalid Email or Not Supported Platform!\nSupported platforms :@gmail.com, @outlook.com, @alexu.edu.eg\n");
-            return 0;
-        }
+    else
+    {
+        printf("Invalid Email or Not Supported Platform!\nSupported platforms :@gmail.com, @outlook.com, @alexu.edu.eg\n");
+        return 0;
+    }
 }
 
 ///Checking the mobile number
 ///Returns 1 if the number is valid
 ///returns 0 if the number isn't valid
-int checkNumber(char *number){
-    if (strlen(number) != 11){
+int checkNumber(char *number)
+{
+    if (strlen(number) != 11)
+    {
         printf("Invalid Mobile Number!(Should contain 11 numbers)\n");
         return 0;
     }
 
-    for (size_t i = 0; *(number + i) != '\0'; i++){
-        if (isalpha(*(number + i))){
-            printf("Invalid Mobile Number!(Shouldn't contain letters)\n");
+    for (size_t i = 0; *(number + i) != '\0'; i++)
+    {
+        if (isalpha(*(number + i)) || *(number + i) == ',')
+        {
+            printf("Invalid Mobile Number!(Shouldn't contain letters and not ',')\n");
             return 0;
         }
     }
@@ -838,6 +974,16 @@ int checkNumber(char *number){
 }
 
 ///Testing that the data is saved properly
+void printUser(const Account *user)
+{
+    printf("Account number: %s\n", user->account_number);
+    printf("Name: %s\n", user->username);
+    printf("E-mail : %s\n", user->email_address);
+    printf("Balance: %.2lf\n", user->balance);
+    printf("Mobile: %s\n", user->mobile_number);
+    printf("Date Opened: %s %d\n", convertMonth(user->dateOpened.month), user->dateOpened.year);
+    printf("\n");
+}
 
 ///Will be mainly used in ADD function
 void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd)
@@ -866,8 +1012,10 @@ char *StrToUpper(char *str)
     return str;
 }
 
-char *convertMonth(int monthnum){
-    switch(monthnum){
+char *convertMonth(int monthnum)
+{
+    switch(monthnum)
+    {
     case 1:
         return "January";
     case 2:

@@ -1,4 +1,4 @@
 Deposit 200$
 Deposit -100$
 Deposit 100$
-You sent 100$ to 4561231234You sent 100$ to 1111111111
+You sent 100$ to 4561231234You sent 100$ to 1111111111You received 100.000000$ from 1234567892
