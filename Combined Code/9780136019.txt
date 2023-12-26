@@ -1,4 +1,4 @@
 Deposit 100$
 Withdraw 200$
 Withdraw 500$
-You sent 100$ to 1234567891You sent 0$ to 1234567891
+You sent 100$ to 1234567891You sent 0$ to 1234567891You sent 100$ to 1234567891
