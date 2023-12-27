@@ -248,6 +248,8 @@ void Modify(void)
             {
                 Add();
             }
+            else if (choice2 == 'n' || choice2 == 'N')
+                Menu();
         }
 
         /// modify the required account
