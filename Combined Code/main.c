@@ -378,11 +378,7 @@ void Query(void)
         {
             /// search for the index of the required account in the main structure of the clients
             int place=loadAccIndex(reqAcc);
-            printf("\n%s: %s\n","Account Number",accounts[place].account_number);
-            printf("%s: %s\n","Name",accounts[place].username);
-            printf("%s: %s\n","E-mail",accounts[place].email_address);
-            printf("%s: %s\n","Mobile",accounts[place].mobile_number);
-            printf("%s: %s %d\n ","Data Opened",convertMonth(accounts[place].dateOpened.month),accounts[place].dateOpened.year);
+            printUser(&accounts[place]);
             printf("\nDo you want to search for more accounts?(Y for Yes/N for No): ");
             scanf("%c", &choise);
             getchar();
