@@ -497,7 +497,9 @@ void Add(void)
 {
 
 /// return a pointer to the current calendar time
+    /// variable suitable for storing the calender time since 1970
     time_t t = time(NULL);
+    /// instant of time structure and local function breaks the time since 1970 into the structure variables
     struct tm tm = *localtime(&t);
 
     char account_number[11];
@@ -561,6 +563,7 @@ void Add(void)
         }
         while(flag_1 == 0);
         /// the data of adding the account
+        printf("%d",tm.tm_year);
         data.year = tm.tm_year + 1900;
         data.month = tm.tm_mon + 1;
         /// making an instant of the data
