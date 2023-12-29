@@ -230,6 +230,7 @@ void Modify(void)
 {
     char accReqMod[11];
     char choice1, choice2;
+    int flag=1;
 
     do
     {
@@ -254,6 +255,8 @@ void Modify(void)
             {
                 Add();
             }
+            else
+                flag=0;
         }
 
         /// modify the required account
@@ -302,12 +305,14 @@ void Modify(void)
             }
 
         }
-        Save();
+        if(flag == 1)
+          {Save();
+          }
         printf("\nDo want to modify again?!!\n(Y for yes, N for no)");
         scanf("%c", &choice1);
         getchar();
     }
-    while(choice1 == 'y' || choice1 == 'y');
+    while(choice1 == 'y' || choice1 == 'y' );
 }
 
 ///Search the user names using strstr function
