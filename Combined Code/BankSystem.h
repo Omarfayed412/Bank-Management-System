@@ -1,13 +1,6 @@
 #ifndef BANKSYSTEM_H_INCLUDED
 #define BANKSYSTEM_H_INCLUDED
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-#include <time.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +9,7 @@
 
 #define sizeUsers 50
 #define sizeU 50
+
 
 ///Struct that holds date
 typedef struct
@@ -43,7 +37,7 @@ typedef struct
 } User;
 
 ///used throughout the program to calculate available places in the accounts array
-unsigned int acCount = 1;
+unsigned int acCount = 0;
 unsigned int useCount = 0;
 ///Array of struct that carries the data of all the users
 Account accounts[sizeUsers];
@@ -156,7 +150,7 @@ void loadAccounts(void)
     while (fgets(line, sizeof(line), file) != NULL)
     {
         // Remove trailing newline character
-        line[strcspn(line, "\n")] = '\0';
+        //line[strcspn(line, "\n")] = '\0';
 
         // Use strtok to tokenize the line based on commas
         char *token = strtok(line, ",");
@@ -192,7 +186,7 @@ void loadAccounts(void)
 
         if (token != NULL)
         {
-            sscanf(token, "%d/%d",
+            sscanf(token, "%d-%d",
                    &accounts[acCount].dateOpened.month,
                    &accounts[acCount].dateOpened.year);
         }
@@ -1034,7 +1028,9 @@ void Sort(void)
     }
     while(flag==1||c=='Y'||c=='y');
 }
-int* sortByName()
+
+
+int* sortByName(void)
 {
     int *Indices = malloc(sizeof(int)*acCount);
     fillArray(Indices);
@@ -1055,7 +1051,9 @@ int* sortByName()
     }
     return Indices;
 }
-int* sortByBalance()
+
+
+int* sortByBalance(void)
 {
     int *Indices = malloc(sizeof(int)*acCount);
     fillArray(Indices);
@@ -1076,6 +1074,8 @@ int* sortByBalance()
     }
     return Indices;
 }
+
+
 /// fill a default array by number from one
 void fillArray(int *ptr)
 {
@@ -1084,7 +1084,9 @@ void fillArray(int *ptr)
         *(ptr+counter)=counter;
     }
 }
-int * sortByData()
+
+
+int * sortByData(void)
 {
     int *Indices = malloc(sizeof(int)*acCount);
     fillArray(Indices);
@@ -1128,7 +1130,6 @@ int * sortByData()
 }
 
 
-
 ///This function sends all the data collected in the program to the database again
 ///Data is saved in the format account number, user name, email, balance, mobile number, date opened
 void Save(void)
@@ -1156,7 +1157,6 @@ void Save(void)
 }
 
 
-
 /// return the index of the required client
 int loadAccIndex(char *accountNumber)
 {
@@ -1168,6 +1168,7 @@ int loadAccIndex(char *accountNumber)
             return counter;
     }
 }
+
 
 ///return 0 if the account already exist
 ///return 1 if the account do not exist
@@ -1187,7 +1188,6 @@ int AccountExistenceCheck (char *accountNumber)
     }
     return flag;
 }
-
 
 
 ///Checking the account number errors
@@ -1304,6 +1304,7 @@ int checkNumber(char *number)
     return 1;
 }
 
+
 ///Testing that the data is saved properly
 void printUser(const Account *user)
 {
@@ -1315,6 +1316,7 @@ void printUser(const Account *user)
     printf("Date Opened: %s %d\n", convertMonth(user->dateOpened.month), user->dateOpened.year);
     printf("\n");
 }
+
 
 ///Will be mainly used in ADD function
 void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd)
@@ -1329,11 +1331,13 @@ void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char
     acc->dateOpened.year = dateOpnd->year;
 }
 
+
 ///Will be used before closing the program
 void destructAccount(Account *acc)
 {
     free(acc);
 }
+
 
 ///Function that changes all the characters in a string to UPPER case
 char *StrToUpper(char *str)
@@ -1342,6 +1346,7 @@ char *StrToUpper(char *str)
         *(str + i) = toupper(*(str + i));
     return str;
 }
+
 
 char *convertMonth(int monthnum)
 {
