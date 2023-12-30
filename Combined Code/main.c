@@ -12,7 +12,7 @@ int main()
     printf("======================\nBank Management System\n======================\n");
     //Login();
 
-    loadAccounts();
+    //loadAccounts();
 
 
     ///1st Step in our code is retrieving all the data saved in the accounts.txt file

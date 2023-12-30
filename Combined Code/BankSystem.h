@@ -52,19 +52,20 @@ User users[sizeU];
 ///Main Functions
 void readUser(void);
 void Login(void);
+void loadAccounts(void);
+void retrieveData(void);
 void Menu(void);
-void Save(void);
-void advSearch(void);
-void Modify(void);
 void Add(void);
+void deleteAccount(void);
+void Modify(void);
 void Query(void);
-void Deposit(void);
+void advSearch(void);
 void WithDraw(void);
+void Deposit(void);
 void Transfer(void);
 void Report(void);
 void Sort(void);
-void loadAccounts(void);
-void deleteAccount(void);
+void Save(void);
 
 ///Helping functions for struct and arrays manipulation
 int   checkAccountNo(char *accStr);
@@ -75,75 +76,17 @@ int   checkBalance(char *BalStr);
 int   loadAccIndex(char *accountNumber);
 char *convertMonth(int monthnum);
 char *StrToUpper(char *str);
-int * sortByData();
+int  *sortByData(void);
+int  *sortByBalance(void);
+int  *sortByName(void);
 void fillArray(int *ptr);
-int* sortByBalance();
-int* sortByName();
+
 
 void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd);
 void destructAccount(Account *acc);
-void retrieveData(void);
 void printUser(const Account *user);
 int  AccountExistenceCheck (char *accountNumber);
 
-
-
-
-void Report(void)
-{
-    char account_number[11];
-    char fileName[16];
-    char buf[100];
-    char n;
-    int count=0;
-    int i;
-
-    do
-    {
-        printf("%s", "enter your account number:");
-        gets(account_number);
-    }
-    while (checkAccountNo(account_number) == 0); //acc num invalid
-
-    if(AccountExistenceCheck(account_number) == 0)
-    {
-        sprintf(fileName, "%s.txt", account_number);
-        int index=loadAccIndex(account_number);
-        accounts[index].f_report=fopen(fileName, "r");
-        for(i=0; !feof(accounts[index].f_report); i++)
-        {
-            n = fgetc(accounts[index].f_report);
-            if(n == '\n')
-                count++;
-
-        }
-
-        fseek(accounts[index].f_report, 0, SEEK_SET);
-
-        if(count < 5 || count == 5)
-        {
-            for(i=0; i<count; i++)
-            {
-                fgets(buf, 99, accounts[index].f_report);
-                printf("%s", buf);
-            }
-        }
-        else
-        {
-            for(i=0; i < (count - 5); i++)
-            {
-                fgets(buf, 99, accounts[index].f_report);
-
-            }
-            for(i=0; i < 5; i++)
-            {
-                fgets(buf, 99, accounts[index].f_report);
-                printf("%s", buf);
-            }
-        }
-        fclose(accounts[index].f_report);
-    }
-}
 
 void readUser(void)
 {
@@ -198,21 +141,337 @@ void Login(void)
 }
 
 
-/*void deleteAccount(void)
+void loadAccounts(void)
 {
-    int accountNumber;
+    FILE *file = fopen("accounts.txt", "r");
+    if (file == NULL)
+    {
+        printf("Error opening file: accounts.txt\n");
+        return;
+    }
+
+    char line[256]; // Adjust the buffer size as needed
+
+    // Read data from the file and populate the accounts array
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
+        // Remove trailing newline character
+        line[strcspn(line, "\n")] = '\0';
+
+        // Use strtok to tokenize the line based on commas
+        char *token = strtok(line, ",");
+        if (token != NULL)
+        {
+            strcpy(accounts[acCount].account_number, token);
+            token = strtok(NULL, ",");
+        }
+
+        if (token != NULL)
+        {
+            strcpy(accounts[acCount].username, token);
+            token = strtok(NULL, ",");
+        }
+
+        if (token != NULL)
+        {
+            strcpy(accounts[acCount].email_address, token);
+            token = strtok(NULL, ",");
+        }
+
+        if (token != NULL)
+        {
+            accounts[acCount].balance = atof(token);
+            token = strtok(NULL, ",");
+        }
+
+        if (token != NULL)
+        {
+            strcpy(accounts[acCount].mobile_number, token);
+            token = strtok(NULL, ",");
+        }
+
+        if (token != NULL)
+        {
+            sscanf(token, "%d/%d",
+                   &accounts[acCount].dateOpened.month,
+                   &accounts[acCount].dateOpened.year);
+        }
+
+        acCount++;
+    }
+
+    fclose(file);
+}
+
+
+///Retrieving data from the text file and constructing the instances based on data collected
+void retrieveData(void)
+{
+    FILE *fptr = fopen("accounts.txt", "r");
+    if (fptr == NULL)
+    {
+        printf("Couldn't find database file!\n");
+        exit(-1);
+    }
+
+    char buffer[200];
+    size_t i = 0, j;
+
+    while((!feof(fptr)) && i < sizeUsers)
+    {
+        j = 0;
+        fgets(buffer, 200, fptr);
+
+        char *token = strtok(buffer, ",");
+        char *dateTok;
+
+        strcpy((accounts + i)->account_number, token);
+        while(token != NULL)
+        {
+            switch(j)
+            {
+            case 1:
+                strcpy((accounts + i)->username, token);
+                break;
+
+            case 2:
+                strcpy((accounts + i)->email_address, token);
+                break;
+
+            case 3:
+                (accounts + i)->balance = strtod(token, NULL);
+                break;
+
+            case 4:
+                strcpy((accounts + i)->mobile_number, token);
+                break;
+
+            case 5:
+                dateTok = strtok(token, "-");
+                //Convert the read token into integer
+                (accounts + i)->dateOpened.month = atoi(dateTok);
+                while (dateTok != NULL)
+                {
+                    (accounts + i)->dateOpened.year = atoi(dateTok);
+                    dateTok = strtok(NULL, "-");
+                }
+                break;
+            }
+            token = strtok(NULL, ",");
+            j++;
+        }
+        i++;
+    }
+    fclose(fptr);
+    ///Set the global accounts counter
+    acCount = i - 1;
+}
+
+
+///This function is main caller for all the other functions in the program
+///Gives you a list of options to choose from and then interprets the entered data
+///to known commands like a CLI
+void Menu(void)
+{
+    char choice[20];
+    int flag;
     do
     {
-        printf("Enter account number to delete: ");
-        scanf("%d", &accountNumber);
-    }
-    while(checkAccountNo(accountNumber) == 0 || AccountExistenceCheck(accountNumber) == 0);
+        flag = 0;
+        printf("%s", "\n\t******** Main Menu (0o0) ********\n");
+        printf("%s", "Please select one of the following options(Enter the EXACT name of desired option):\n");
+        printf("%s", " - ADD\n - DELETE\n - MODIFY\n - SEARCH\n - ADVANCED SEARCH\n - WITHDRAW\n");
+        printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - QUIT\n");
+        printf("Desired option: ");
+        gets(choice);
+        StrToUpper(choice);
 
-    //locate index
-    //account arguments = 0
-    accountNumber--;
-    printf("Account deleted successfully.\n");
-}*/
+        if (strcmp(choice, "ADD") == 0)
+            Add();
+
+        else if (strcmp(choice, "DELETE") == 0)
+            deleteAccount();
+
+        else if (strcmp(choice, "MODIFY") == 0)
+            Modify();
+
+        else if (strcmp(choice, "SEARCH") == 0)
+            Query();
+
+        else if (strcmp(choice, "ADVANCED SEARCH") == 0)
+            advSearch();
+
+        else if (strcmp(choice, "WITHDRAW") == 0)
+            WithDraw();
+
+        else if (strcmp(choice, "DEPOSIT") == 0)
+            Deposit();
+
+        else if (strcmp(choice, "TRANSFER") == 0)
+            Transfer();
+
+        else if (strcmp(choice, "REPORT") == 0)
+            Report();
+
+        else if (strcmp(choice, "PRINT") == 0)
+            Sort();
+
+        else if (strcmp(choice, "QUIT") == 0)
+        {
+            printf("Thank you for using our system :)\nExiting...\n");
+            break;
+        }
+        else
+        {
+            printf("%s", "Invalid Option Entered!\n");
+        }
+    }
+    while (!flag);
+}
+
+
+
+void Add(void)
+{
+
+/// return a pointer to the current calendar time
+    /// variable suitable for storing the calender time since 1970
+    time_t t = time(NULL);
+    /// instant of time structure and local function breaks the time since 1970 into the structure variables
+    struct tm tm = *localtime(&t);
+
+    char account_number[11];
+    char mobile_number[12];
+    char username[20];
+    char choice = 'y';
+    int flag_1 = 0, flag_2 = 0;
+    char email_adresss[30];
+    double balance = 0;
+    Date data;
+
+    do
+    {
+        /// print the number of available places
+        printf("There are a %d places allowed\n", sizeUsers - acCount);
+        printf("%s\n", "----  New Account ---");
+        do
+        {
+            printf("%s", "Account_number : ");
+
+            gets(account_number);
+
+            flag_1 = checkAccountNo(account_number);
+            if (flag_1 == 0)
+            {
+                continue;
+            }
+            flag_2 = AccountExistenceCheck(account_number);
+            if(flag_2 == 0)
+            {
+                printf("%s\n", "Account already exist!!\n");
+            }
+
+        }
+        while(flag_1 == 0 || flag_2 == 0);
+
+        do
+        {
+            printf("%s", "UserName: ");
+            gets(username);
+            flag_1 = 0;
+            flag_1 = checkName(username);
+        }
+        while(flag_1 == 0);
+
+        do
+        {
+            flag_1 == 0;
+            printf("%s", "Mobile Number: ");
+            gets(mobile_number);
+            flag_1 = checkNumber(mobile_number);
+        }
+        while(flag_1 == 0);
+
+        do
+        {
+            flag_1 = 0;
+            printf("%s", "Email Address: ");
+            gets(email_adresss);
+            flag_1 = checkEmail(email_adresss);
+        }
+        while(flag_1 == 0);
+        /// the data of adding the account
+        printf("%d",tm.tm_year);
+        data.year = tm.tm_year + 1900;
+        data.month = tm.tm_mon + 1;
+        /// making an instant of the data
+        //     Account *new_client = malloc(sizeof(Account));
+        //   ConstructAccount(new_client, mobile_number, account_number, username, email_adresss, &balance, &data);
+        /// increasing the number of accounts
+        ++acCount;
+        constructAccount(&accounts[acCount - 1], mobile_number, account_number, username, email_adresss, balance, &data);
+        Save();
+        ///choice for adding ,more accounts
+        printf("Do you want to add more accounts?(Y for Yes/N for No): ");
+        scanf("%c", &choice);
+        getchar();
+    }
+    while(choice == 'y' || choice == 'Y');
+}
+
+
+void deleteAccount(void)
+{
+    char accountNumberToDelete[11];
+    int indexToDelete;
+    char choice;
+
+    do
+    {
+        do
+        {
+            printf("Enter the bank account number to delete: ");
+            gets(accountNumberToDelete);
+
+        } while (!(AccountExistenceCheck(accountNumberToDelete) == 0 && checkAccountNo(accountNumberToDelete)== 1));
+
+        // Check if the account exists
+        indexToDelete = loadAccIndex(accountNumberToDelete);
+
+
+        // Check if the balance is zero for deletion
+        if (accounts[indexToDelete].balance > 0)
+        {
+            printf("Error: Deletion of non-zero balance account is not allowed.\n");
+        }
+        else
+        {
+        // replace last index and deleted
+        // Shift remaining accounts to fill the gap
+        for (int i = indexToDelete; i < acCount - 1; i++)
+        {
+            accounts[i] = accounts[i + 1];
+        }
+
+        acCount--;
+
+        // make everything for the account 0
+
+        printf("Account with account number %s has been deleted.\n", accountNumberToDelete);
+        // ask if user wants to save
+        Save();
+        }
+
+
+        printf("\nDo you want to delete for more accounts?(Y for Yes/N for No): ");
+        scanf("%c", &choice);
+        getchar();
+
+    }
+    while (choice == 'y' || choice == 'Y');
+}
+
+
 
 void Modify(void)
 {
@@ -303,42 +562,6 @@ void Modify(void)
     while(choice1 == 'y' || choice1 == 'y' );
 }
 
-///Search the user names using strstr function
-///Sets the upper case as a reference to avoid case sensitivity
-void advSearch(void)
-{
-    char search_key[20];
-    char buffer[20];
-    char choice = 'y';
-
-    do
-    {
-        printf("%s", "Enter the search keyword: ");
-        gets(search_key);
-
-        int found = 0;
-
-        printf("%s", "Search results:\n\n");
-        for (size_t i = 0; i < acCount; i++)
-        {
-            strcpy(buffer, (accounts + i)->username);
-            if (strstr(StrToUpper(buffer), StrToUpper(search_key)) != NULL)
-            {
-                printUser((accounts + i));
-                found = 1;
-            }
-        }
-
-        if (found == 0)
-        {
-            printf("No matches are found!\n");
-        }
-        printf("Do you want to search for something else?(Y/N): ");
-        scanf("%c", &choice);
-        getchar();
-    }
-    while (choice == 'y' || choice == 'Y');
-}
 
 void Query(void)
 {
@@ -387,274 +610,173 @@ void Query(void)
     while((choise== 'y' || choise== 'Y'));
 }
 
-/// return the index of the required client
-int loadAccIndex(char *accountNumber)
+
+
+///Search the user names using strstr function
+///Sets the upper case as a reference to avoid case sensitivity
+void advSearch(void)
 {
-
-    int counter=0;
-    for(counter; counter<acCount; ++counter)
-    {
-        if(strcmp(accountNumber,accounts[counter].account_number)==0)
-            return counter;
-    }
-}
-
-///return 0 if the account already exist
-///return 1 if the account do not exist
-/// check existence of an account number
-int AccountExistenceCheck (char *accountNumber)
-{
-/// Add new account
-    int counter,flag=0;
-    for(counter=0; counter<acCount; ++counter)
-    {
-        flag=strcmp(accountNumber,accounts[counter].account_number);
-
-        if(flag==0)
-        {
-            return flag;
-        }
-    }
-    return flag;
-}
-
-///Retrieving data from the text file and constructing the instances based on data collected
-void retrieveData(void)
-{
-    FILE *fptr = fopen("accounts.txt", "r");
-    if (fptr == NULL)
-    {
-        printf("Couldn't find database file!\n");
-        exit(-1);
-    }
-
-    char buffer[200];
-    size_t i = 0, j;
-
-    while((!feof(fptr)) && i < sizeUsers)
-    {
-        j = 0;
-        fgets(buffer, 200, fptr);
-
-        char *token = strtok(buffer, ",");
-        char *dateTok;
-
-        strcpy((accounts + i)->account_number, token);
-        while(token != NULL)
-        {
-            switch(j)
-            {
-            case 1:
-                strcpy((accounts + i)->username, token);
-                break;
-
-            case 2:
-                strcpy((accounts + i)->email_address, token);
-                break;
-
-            case 3:
-                (accounts + i)->balance = strtod(token, NULL);
-                break;
-
-            case 4:
-                strcpy((accounts + i)->mobile_number, token);
-                break;
-
-            case 5:
-                dateTok = strtok(token, "-");
-                //Convert the read token into integer
-                (accounts + i)->dateOpened.month = atoi(dateTok);
-                while (dateTok != NULL)
-                {
-                    (accounts + i)->dateOpened.year = atoi(dateTok);
-                    dateTok = strtok(NULL, "-");
-                }
-                break;
-            }
-            token = strtok(NULL, ",");
-            j++;
-        }
-        i++;
-    }
-    fclose(fptr);
-    ///Set the global accounts counter
-    acCount = i - 1;
-}
-
-void Add(void)
-{
-
-/// return a pointer to the current calendar time
-    /// variable suitable for storing the calender time since 1970
-    time_t t = time(NULL);
-    /// instant of time structure and local function breaks the time since 1970 into the structure variables
-    struct tm tm = *localtime(&t);
-
-    char account_number[11];
-    char mobile_number[12];
-    char username[20];
+    char search_key[20];
+    char buffer[20];
     char choice = 'y';
-    int flag_1 = 0, flag_2 = 0;
-    char email_adresss[30];
-    double balance = 0;
-    Date data;
 
     do
     {
-        /// print the number of available places
-        printf("There are a %d places allowed\n", sizeUsers - acCount);
-        printf("%s\n", "----  New Account ---");
-        do
+        printf("%s", "Enter the search keyword: ");
+        gets(search_key);
+
+        int found = 0;
+
+        printf("%s", "Search results:\n\n");
+        for (size_t i = 0; i < acCount; i++)
         {
-            printf("%s", "Account_number : ");
-
-            gets(account_number);
-
-            flag_1 = checkAccountNo(account_number);
-            if (flag_1 == 0)
+            strcpy(buffer, (accounts + i)->username);
+            if (strstr(StrToUpper(buffer), StrToUpper(search_key)) != NULL)
             {
-                continue;
+                printUser((accounts + i));
+                found = 1;
             }
-            flag_2 = AccountExistenceCheck(account_number);
-            if(flag_2 == 0)
-            {
-                printf("%s\n", "Account already exist!!\n");
-            }
-
         }
-        while(flag_1 == 0 || flag_2 == 0);
 
-        do
+        if (found == 0)
         {
-            printf("%s", "UserName: ");
-            gets(username);
-            flag_1 = 0;
-            flag_1 = checkName(username);
+            printf("No matches are found!\n");
         }
-        while(flag_1 == 0);
-
-        do
-        {
-            flag_1 == 0;
-            printf("%s", "Mobile Number: ");
-            gets(mobile_number);
-            flag_1 = checkNumber(mobile_number);
-        }
-        while(flag_1 == 0);
-
-        do
-        {
-            flag_1 = 0;
-            printf("%s", "Email Address: ");
-            gets(email_adresss);
-            flag_1 = checkEmail(email_adresss);
-        }
-        while(flag_1 == 0);
-        /// the data of adding the account
-        printf("%d",tm.tm_year);
-        data.year = tm.tm_year + 1900;
-        data.month = tm.tm_mon + 1;
-        /// making an instant of the data
-        //     Account *new_client = malloc(sizeof(Account));
-        //   ConstructAccount(new_client, mobile_number, account_number, username, email_adresss, &balance, &data);
-        /// increasing the number of accounts
-        ++acCount;
-        constructAccount(&accounts[acCount - 1], mobile_number, account_number, username, email_adresss, balance, &data);
-        Save();
-        ///choice for adding ,more accounts
-        printf("Do you want to add more accounts?(Y for Yes/N for No): ");
+        printf("Do you want to search for something else?(Y/N): ");
         scanf("%c", &choice);
         getchar();
     }
-    while(choice == 'y' || choice == 'Y');
+    while (choice == 'y' || choice == 'Y');
 }
 
-///This function is main caller for all the other functions in the program
-///Gives you a list of options to choose from and then interprets the entered data
-///to known commands like a CLI
-void Menu(void)
+
+void WithDraw(void)
 {
-    char choice[20];
-    int flag;
+    char account_number[11];
+    char amount1[sizeof(double)];
+    double amount2;
+    char choice;
+    char fileName[16];
     do
     {
-        flag = 0;
-        printf("%s", "\n\t******** Main Menu (0o0) ********\n");
-        printf("%s", "Please select one of the following options(Enter the EXACT name of desired option):\n");
-        printf("%s", " - ADD\n - DELETE\n - MODIFY\n - SEARCH\n - ADVANCED SEARCH\n - WITHDRAW\n");
-        printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - QUIT\n");
-        printf("Desired option: ");
-        gets(choice);
-        StrToUpper(choice);
-
-        if (strcmp(choice, "ADD") == 0)
-            Add();
-
-        else if (strcmp(choice, "DELETE") == 0)
-            deleteAccount();
-
-        else if (strcmp(choice, "MODIFY") == 0)
-            Modify();
-
-        else if (strcmp(choice, "SEARCH") == 0)
-            Query();
-
-        else if (strcmp(choice, "ADVANCED SEARCH") == 0)
-            advSearch();
-
-        else if (strcmp(choice, "WITHDRAW") == 0)
-            WithDraw();
-
-        else if (strcmp(choice, "DEPOSIT") == 0)
-            Deposit();
-
-        else if (strcmp(choice, "TRANSFER") == 0)
-            Transfer();
-
-        else if (strcmp(choice, "REPORT") == 0)
-            Report();
-
-        else if (strcmp(choice, "PRINT") == 0)
-            Sort();
-
-        else if (strcmp(choice, "QUIT") == 0)
+        do
         {
-            printf("Thank you for using our system :)\nExiting...\n");
-            break;
+            printf("%s", "Enter your account number:");
+            gets(account_number);
         }
+        while (checkAccountNo(account_number) == 0); //acc num invalid
+
+        if(AccountExistenceCheck(account_number) == 0)//acc exist
+        {
+            int index = loadAccIndex(account_number);
+            printf("Your balance= %lf$\n", accounts[index].balance);
+
+            do
+            {
+                do
+                {
+                    printf("%s","Enter an amount to withdraw(Max limit=10,000$/transaction): ");
+                    gets(amount1);
+
+                }
+                while(checkBalance(amount1)==0);
+                amount2=strtod(amount1,NULL);
+            }
+            while(amount2 > 10000 || amount2 > accounts[index].balance || amount2 <= 0);
+
+            accounts[index].balance -= amount2;
+
+            sprintf(fileName, "%s.txt", accounts[index].account_number);
+            accounts[index].f_report = fopen(fileName,"a");
+
+            if (accounts[index].f_report == NULL)
+            {
+                printf("Couldn't Find File!\n");
+                exit(-1);
+            }
+            fprintf(accounts[index].f_report,"Withdraw %lf$\n",amount2);
+            fclose(accounts[index].f_report);
+
+            Save();
+            printf("Transaction Successful :)\n");
+
+        }
+
         else
-        {
-            printf("%s", "Invalid Option Entered!\n");
-        }
+            printf("Transaction Failed!\n");
+
+        printf("Do you want to Withdraw again?(Y/N): ");
+        scanf("%c", &choice);
+        getchar();
     }
-    while (!flag);
+    while (choice == 'y' || choice == 'Y');
 }
 
-///This function sends all the data collected in the program to the database again
-///Data is saved in the format account number, user name, email, balance, mobile number, date opened
-void Save(void)
+
+
+void Deposit(void)
 {
+    char account_number[11];
+    char amount1[sizeof(double)];
+    double amount2;
     char choice;
-    printf("Do you want to save changes?(Y for Yes/N for No): ");
-    scanf("%c", &choice);
-    getchar();
-    if (choice == 'y' || choice == 'Y')
+    char fileName[16];
+    do
     {
-        FILE *fptr = fopen("accounts.txt", "w");
-
-        for (size_t i = 0; i < acCount; i++)
+        do
         {
-            fprintf(fptr, "%s,", accounts[i].account_number);
-            fprintf(fptr, "%s,", accounts[i].username);
-            fprintf(fptr, "%s,", accounts[i].email_address);
-            fprintf(fptr, "%.2lf,", accounts[i].balance);
-            fprintf(fptr, "%s,", accounts[i].mobile_number);
-            fprintf(fptr, "%d-%d\n", accounts[i].dateOpened.month, accounts[i].dateOpened.year);
+            printf("%s", "Enter your account number:");
+            gets(account_number);
+
+
+        }
+        while (checkAccountNo(account_number) == 0); //acc num invalid
+
+        if(AccountExistenceCheck(account_number) == 0)//acc exist
+        {
+            do
+            {
+
+                do
+                {
+                    printf("%s", "Enter the amount needs to be deposited (Max limit = 10000$): ");
+                    gets(amount1);
+                }
+                while(checkBalance(amount1)==0);
+                amount2=strtod(amount1,NULL);
+
+            }
+            while(amount2 > 10000 || amount2 <= 0);
+
+
+            int index = loadAccIndex(account_number);
+            accounts[index].balance += amount2;
+            sprintf(fileName, "%s.txt", accounts[index].account_number);
+            accounts[index].f_report = fopen(fileName, "a");
+
+            if (accounts[index].f_report == NULL)
+            {
+                printf("Couldn't find file!\n");
+                exit(-1);
+            }
+
+            fprintf(accounts[index].f_report, "Deposit %lf$\n", amount2);
+            fclose(accounts[index].f_report);
+            printf("Transaction successful :)\n");
+            Save();
         }
 
-        fclose(fptr);
+        else
+            printf("Transaction failed!\nAccount Not Found!\n");
+
+        printf("\nDo you want to deposit again?(Y/N): ");
+        scanf("%c", &choice);
+        getchar();
     }
+    while (choice == 'y' || choice == 'Y');
 }
+
+
 
 void Transfer(void)
 {
@@ -749,310 +871,64 @@ void Transfer(void)
     while (choicee == 'y' || choicee == 'Y');
 }
 
-void Deposit(void)
+
+
+void Report(void)
 {
     char account_number[11];
-    char amount1[sizeof(double)];
-    double amount2;
-    char choice;
     char fileName[16];
+    char buf[100];
+    char n;
+    int count=0;
+    int i;
+
     do
     {
-        do
-        {
-            printf("%s", "Enter your account number:");
-            gets(account_number);
+        printf("%s", "enter your account number:");
+        gets(account_number);
+    }
+    while (checkAccountNo(account_number) == 0); //acc num invalid
 
+    if(AccountExistenceCheck(account_number) == 0)
+    {
+        sprintf(fileName, "%s.txt", account_number);
+        int index=loadAccIndex(account_number);
+        accounts[index].f_report=fopen(fileName, "r");
+        for(i=0; !feof(accounts[index].f_report); i++)
+        {
+            n = fgetc(accounts[index].f_report);
+            if(n == '\n')
+                count++;
 
         }
-        while (checkAccountNo(account_number) == 0); //acc num invalid
 
-        if(AccountExistenceCheck(account_number) == 0)//acc exist
+        fseek(accounts[index].f_report, 0, SEEK_SET);
+
+        if(count < 5 || count == 5)
         {
-            do
+            for(i=0; i<count; i++)
             {
-
-                do
-                {
-                    printf("%s", "Enter the amount needs to be deposited (Max limit = 10000$): ");
-                    gets(amount1);
-                }
-                while(checkBalance(amount1)==0);
-                amount2=strtod(amount1,NULL);
-
+                fgets(buf, 99, accounts[index].f_report);
+                printf("%s", buf);
             }
-            while(amount2 > 10000 || amount2 <= 0);
-
-
-            int index = loadAccIndex(account_number);
-            accounts[index].balance += amount2;
-            sprintf(fileName, "%s.txt", accounts[index].account_number);
-            accounts[index].f_report = fopen(fileName, "a");
-
-            if (accounts[index].f_report == NULL)
-            {
-                printf("Couldn't find file!\n");
-                exit(-1);
-            }
-
-            fprintf(accounts[index].f_report, "Deposit %lf$\n", amount2);
-            fclose(accounts[index].f_report);
-            printf("Transaction successful :)\n");
-            Save();
         }
-
         else
-            printf("Transaction failed!\nAccount Not Found!\n");
-
-        printf("\nDo you want to deposit again?(Y/N): ");
-        scanf("%c", &choice);
-        getchar();
-    }
-    while (choice == 'y' || choice == 'Y');
-}
-
-void WithDraw(void)
-{
-    char account_number[11];
-    char amount1[sizeof(double)];
-    double amount2;
-    char choice;
-    char fileName[16];
-    do
-    {
-        do
         {
-            printf("%s", "Enter your account number:");
-            gets(account_number);
-        }
-        while (checkAccountNo(account_number) == 0); //acc num invalid
-
-        if(AccountExistenceCheck(account_number) == 0)//acc exist
-        {
-            int index = loadAccIndex(account_number);
-            printf("Your balance= %lf$\n", accounts[index].balance);
-
-            do
+            for(i=0; i < (count - 5); i++)
             {
-                do
-                {
-                    printf("%s","Enter an amount to withdraw(Max limit=10,000$/transaction): ");
-                    gets(amount1);
+                fgets(buf, 99, accounts[index].f_report);
 
-                }
-                while(checkBalance(amount1)==0);
-                amount2=strtod(amount1,NULL);
             }
-            while(amount2 > 10000 || amount2 > accounts[index].balance || amount2 <= 0);
-
-            accounts[index].balance -= amount2;
-
-            sprintf(fileName, "%s.txt", accounts[index].account_number);
-            accounts[index].f_report = fopen(fileName,"a");
-
-            if (accounts[index].f_report == NULL)
+            for(i=0; i < 5; i++)
             {
-                printf("Couldn't Find File!\n");
-                exit(-1);
+                fgets(buf, 99, accounts[index].f_report);
+                printf("%s", buf);
             }
-            fprintf(accounts[index].f_report,"Withdraw %lf$\n",amount2);
-            fclose(accounts[index].f_report);
-
-            Save();
-            printf("Transaction Successful :)\n");
-
         }
-
-        else
-            printf("Transaction Failed!\n");
-
-        printf("Do you want to Withdraw again?(Y/N): ");
-        scanf("%c", &choice);
-        getchar();
-    }
-    while (choice == 'y' || choice == 'Y');
-}
-
-///Checking the account number errors
-///Returns 1 if the input is valid
-///Returns 0 if the input isn't valid
-int checkAccountNo(char *accStr)
-{
-    if (strlen(accStr) != 10)
-    {
-        printf("Invalid Account Number!(Should be 10-Digits)\n");
-        return 0;
-    }
-    for (size_t i = 0; *(accStr + i) != '\0'; i++)
-    {
-        if (!(isdigit(*(accStr + i)) == 1))
-        {
-            printf("Invalid Account Number!(Should be numbers ONLY)\n");
-            return 0;
-        }
-    }
-    return 1;
-}
-
-///Checking the balance errors
-///Returns 1 if the input is valid
-///Returns 0 if the input isn't valid
-int checkBalance(char *BalStr)
-{
-    for (size_t i = 0; *(BalStr + i) != '\0'; i++)
-    {
-        if (!(isdigit(*(BalStr + i)) == 1))
-        {
-            printf("Invalid Balance!(Should be numbers ONLY)\n");
-            return 0;
-        }
-    }
-    return 1;
-}
-
-///Checking the name
-///Returns 1 if the number is valid
-///returns 0 if the number isn't valid
-int checkName(char *name)
-{
-    for (size_t i = 0; *(name + i) != '\0'; i++)
-    {
-        if (isdigit(*(name + i)) ||  *(name + i) == ',')
-        {
-            printf("Invalid Name!(Should letters ONLY and not contains ',')\n");
-            return 0;
-        }
-    }
-    return 1;
-}
-
-///Checking the Email
-///Returns 1 if the number is valid
-///returns 0 if the number isn't valid
-int checkEmail(char *email)
-{
-    if (!(strstr(email, "@gmail.com") == NULL))
-    {
-
-        return 1;
-    }
-    if (!(strstr(email, "@alexu.edu.eg") == NULL))
-    {
-
-        return 1;
-    }
-    if (!(strstr(email, "@outlook.com") == NULL))
-    {
-
-        return 1;
-    }
-
-    if (!(strstr(email, "@yahoo.com") == NULL))
-    {
-
-        return 1;
-    }
-
-    else
-    {
-        printf("Invalid E-mail!!!\n");
-        return 0;
+        fclose(accounts[index].f_report);
     }
 }
 
-
-///Checking the mobile number
-///Returns 1 if the number is valid
-///returns 0 if the number isn't valid
-int checkNumber(char *number)
-{
-    if (strlen(number) != 11)
-    {
-        printf("Invalid Mobile Number!(Should contain 11 numbers)\n");
-        return 0;
-    }
-
-    for (size_t i = 0; *(number + i) != '\0'; i++)
-    {
-        if (isalpha(*(number + i)) || *(number + i) == ',')
-        {
-            printf("Invalid Mobile Number!(Shouldn't contain letters and not ',')\n");
-            return 0;
-        }
-    }
-
-    return 1;
-}
-
-///Testing that the data is saved properly
-void printUser(const Account *user)
-{
-    printf("Account number: %s\n", user->account_number);
-    printf("Name: %s\n", user->username);
-    printf("E-mail : %s\n", user->email_address);
-    printf("Balance: %.2lf\n", user->balance);
-    printf("Mobile: %s\n", user->mobile_number);
-    printf("Date Opened: %s %d\n", convertMonth(user->dateOpened.month), user->dateOpened.year);
-    printf("\n");
-}
-
-///Will be mainly used in ADD function
-void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd)
-{
-    ///Copying the arguments into the new instance arguments
-    strcpy(acc->account_number, accNum);
-    strcpy(acc->mobile_number, mobile);
-    strcpy(acc->email_address, email);
-    strcpy(acc->username, name);
-    acc->balance = balanceNum;
-    acc->dateOpened.month = dateOpnd->month;
-    acc->dateOpened.year = dateOpnd->year;
-}
-
-///Will be used before closing the program
-void destructAccount(Account *acc)
-{
-    free(acc);
-}
-
-///Function that changes all the characters in a string to UPPER case
-char *StrToUpper(char *str)
-{
-    for (size_t i = 0; str[i] != '\0'; i++)
-        *(str + i) = toupper(*(str + i));
-    return str;
-}
-
-char *convertMonth(int monthnum)
-{
-    switch(monthnum)
-    {
-    case 1:
-        return "January";
-    case 2:
-        return "February";
-    case 3:
-        return "March";
-    case 4:
-        return "April";
-    case 5:
-        return "May";
-    case 6:
-        return "June";
-    case 7:
-        return "July";
-    case 8:
-        return "August";
-    case 9:
-        return "September";
-    case 10:
-        return "October";
-    case 11:
-        return "November";
-    case 12:
-        return "December";
-    }
-}
 
 void Sort(void)
 {
@@ -1251,119 +1127,252 @@ int * sortByData()
     return Indices;
 }
 
-void loadAccounts(void)
+
+
+///This function sends all the data collected in the program to the database again
+///Data is saved in the format account number, user name, email, balance, mobile number, date opened
+void Save(void)
 {
-    FILE *file = fopen("accounts.txt", "r");
-    if (file == NULL)
-    {
-        printf("Error opening file: accounts.txt\n");
-        return;
-    }
-
-    char line[256]; // Adjust the buffer size as needed
-
-    // Read data from the file and populate the accounts array
-    while (fgets(line, sizeof(line), file) != NULL)
-    {
-        // Remove trailing newline character
-        line[strcspn(line, "\n")] = '\0';
-
-        // Use strtok to tokenize the line based on commas
-        char *token = strtok(line, ",");
-        if (token != NULL)
-        {
-            strcpy(accounts[acCount].account_number, token);
-            token = strtok(NULL, ",");
-        }
-
-        if (token != NULL)
-        {
-            strcpy(accounts[acCount].username, token);
-            token = strtok(NULL, ",");
-        }
-
-        if (token != NULL)
-        {
-            strcpy(accounts[acCount].email_address, token);
-            token = strtok(NULL, ",");
-        }
-
-        if (token != NULL)
-        {
-            accounts[acCount].balance = atof(token);
-            token = strtok(NULL, ",");
-        }
-
-        if (token != NULL)
-        {
-            strcpy(accounts[acCount].mobile_number, token);
-            token = strtok(NULL, ",");
-        }
-
-        if (token != NULL)
-        {
-            sscanf(token, "%d/%d",
-                   &accounts[acCount].dateOpened.month,
-                   &accounts[acCount].dateOpened.year);
-        }
-
-        acCount++;
-    }
-
-    fclose(file);
-}
-
-void deleteAccount(void)
-{
-    char accountNumberToDelete[11];
-    int indexToDelete;
     char choice;
-
-    do
+    printf("Do you want to save changes?(Y for Yes/N for No): ");
+    scanf("%c", &choice);
+    getchar();
+    if (choice == 'y' || choice == 'Y')
     {
-        do
-        {
-            printf("Enter the bank account number to delete: ");
+        FILE *fptr = fopen("accounts.txt", "w");
 
-            gets(accountNumberToDelete);
-        } while (!(AccountExistenceCheck(accountNumberToDelete) == 0 && checkAccountNo(accountNumberToDelete)== 1));
-
-        // Check if the account exists
-        indexToDelete = loadAccIndex(accountNumberToDelete);
-
-
-        // Check if the balance is zero for deletion
-        if (accounts[indexToDelete].balance > 0)
+        for (size_t i = 0; i < acCount; i++)
         {
-            printf("Error: Deletion of non-zero balance account is not allowed.\n");
-        }
-        else
-        {
-        // replace last index and deleted
-        // Shift remaining accounts to fill the gap
-        for (int i = indexToDelete; i < acCount - 1; i++)
-        {
-            accounts[i] = accounts[i + 1];
+            fprintf(fptr, "%s,", accounts[i].account_number);
+            fprintf(fptr, "%s,", accounts[i].username);
+            fprintf(fptr, "%s,", accounts[i].email_address);
+            fprintf(fptr, "%.2lf,", accounts[i].balance);
+            fprintf(fptr, "%s,", accounts[i].mobile_number);
+            fprintf(fptr, "%d-%d\n", accounts[i].dateOpened.month, accounts[i].dateOpened.year);
         }
 
-        acCount--;
-
-        // make everything for the account 0
-
-        printf("Account with account number %s has been deleted.\n", accountNumberToDelete);
-        // ask if user wants to save
-        Save();
-        }
-
-
-        printf("\nDo you want to delete for more accounts?(Y for Yes/N for No): ");
-        scanf("%c", &choice);
-        getchar();
-
+        fclose(fptr);
     }
-    while (choice == 'y' || choice == 'Y');
 }
 
+
+
+/// return the index of the required client
+int loadAccIndex(char *accountNumber)
+{
+
+    int counter=0;
+    for(counter; counter<acCount; ++counter)
+    {
+        if(strcmp(accountNumber,accounts[counter].account_number)==0)
+            return counter;
+    }
+}
+
+///return 0 if the account already exist
+///return 1 if the account do not exist
+/// check existence of an account number
+int AccountExistenceCheck (char *accountNumber)
+{
+/// Add new account
+    int counter,flag=0;
+    for(counter=0; counter<acCount; ++counter)
+    {
+        flag=strcmp(accountNumber,accounts[counter].account_number);
+
+        if(flag==0)
+        {
+            return flag;
+        }
+    }
+    return flag;
+}
+
+
+
+///Checking the account number errors
+///Returns 1 if the input is valid
+///Returns 0 if the input isn't valid
+int checkAccountNo(char *accStr)
+{
+    if (strlen(accStr) != 10)
+    {
+        printf("Invalid Account Number!(Should be 10-Digits)\n");
+        return 0;
+    }
+    for (size_t i = 0; *(accStr + i) != '\0'; i++)
+    {
+        if (!(isdigit(*(accStr + i)) == 1))
+        {
+            printf("Invalid Account Number!(Should be numbers ONLY)\n");
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+///Checking the balance errors
+///Returns 1 if the input is valid
+///Returns 0 if the input isn't valid
+int checkBalance(char *BalStr)
+{
+    for (size_t i = 0; *(BalStr + i) != '\0'; i++)
+    {
+        if (!(isdigit(*(BalStr + i)) == 1))
+        {
+            printf("Invalid Balance!(Should be numbers ONLY)\n");
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+///Checking the name
+///Returns 1 if the number is valid
+///returns 0 if the number isn't valid
+int checkName(char *name)
+{
+    for (size_t i = 0; *(name + i) != '\0'; i++)
+    {
+        if (isdigit(*(name + i)) ||  *(name + i) == ',')
+        {
+            printf("Invalid Name!(Should letters ONLY and not contains ',')\n");
+            return 0;
+        }
+    }
+    return 1;
+}
+
+
+///Checking the Email
+///Returns 1 if the number is valid
+///returns 0 if the number isn't valid
+int checkEmail(char *email)
+{
+    if (!(strstr(email, "@gmail.com") == NULL))
+    {
+
+        return 1;
+    }
+    if (!(strstr(email, "@alexu.edu.eg") == NULL))
+    {
+
+        return 1;
+    }
+    if (!(strstr(email, "@outlook.com") == NULL))
+    {
+
+        return 1;
+    }
+
+    if (!(strstr(email, "@yahoo.com") == NULL))
+    {
+
+        return 1;
+    }
+
+    else
+    {
+        printf("Invalid E-mail!!!\n");
+        return 0;
+    }
+}
+
+
+///Checking the mobile number
+///Returns 1 if the number is valid
+///returns 0 if the number isn't valid
+int checkNumber(char *number)
+{
+    if (strlen(number) != 11)
+    {
+        printf("Invalid Mobile Number!(Should contain 11 numbers)\n");
+        return 0;
+    }
+
+    for (size_t i = 0; *(number + i) != '\0'; i++)
+    {
+        if (isalpha(*(number + i)) || *(number + i) == ',')
+        {
+            printf("Invalid Mobile Number!(Shouldn't contain letters and not ',')\n");
+            return 0;
+        }
+    }
+
+    return 1;
+}
+
+///Testing that the data is saved properly
+void printUser(const Account *user)
+{
+    printf("Account number: %s\n", user->account_number);
+    printf("Name: %s\n", user->username);
+    printf("E-mail : %s\n", user->email_address);
+    printf("Balance: %.2lf$\n", user->balance);
+    printf("Mobile: %s\n", user->mobile_number);
+    printf("Date Opened: %s %d\n", convertMonth(user->dateOpened.month), user->dateOpened.year);
+    printf("\n");
+}
+
+///Will be mainly used in ADD function
+void constructAccount(Account *acc, char *mobile, char *accNum, char *name, char *email, double balanceNum, Date *dateOpnd)
+{
+    ///Copying the arguments into the new instance arguments
+    strcpy(acc->account_number, accNum);
+    strcpy(acc->mobile_number, mobile);
+    strcpy(acc->email_address, email);
+    strcpy(acc->username, name);
+    acc->balance = balanceNum;
+    acc->dateOpened.month = dateOpnd->month;
+    acc->dateOpened.year = dateOpnd->year;
+}
+
+///Will be used before closing the program
+void destructAccount(Account *acc)
+{
+    free(acc);
+}
+
+///Function that changes all the characters in a string to UPPER case
+char *StrToUpper(char *str)
+{
+    for (size_t i = 0; str[i] != '\0'; i++)
+        *(str + i) = toupper(*(str + i));
+    return str;
+}
+
+char *convertMonth(int monthnum)
+{
+    switch(monthnum)
+    {
+    case 1:
+        return "January";
+    case 2:
+        return "February";
+    case 3:
+        return "March";
+    case 4:
+        return "April";
+    case 5:
+        return "May";
+    case 6:
+        return "June";
+    case 7:
+        return "July";
+    case 8:
+        return "August";
+    case 9:
+        return "September";
+    case 10:
+        return "October";
+    case 11:
+        return "November";
+    case 12:
+        return "December";
+    }
+}
 
 
 #endif // BANKSYSTEM_H_INCLUDED
