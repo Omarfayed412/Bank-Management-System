@@ -909,8 +909,10 @@ int checkBalance(char *BalStr)
 {
     for (size_t i = 0; *(BalStr + i) != '\0'; i++)
     {
-        if (!(isdigit(*(BalStr + i)) == 1))
+        if (!(isdigit(*(BalStr + i)) == 1) )
         {
+            if ((*(BalStr + i)=='.'))
+                continue;
             printf("Invalid Balance!(Should be numbers ONLY)\n");
             return 0;
         }
