@@ -1,13 +1,10 @@
 # depslib dependency file v1.0
-1703895059 source:d:\electronics\bank-management-system\combined code\main.c
-	"BankSystem.h"
-
-1703895051 d:\electronics\bank-management-system\combined code\banksystem.h
+1703900407 source:d:\electronics\bank-management-system\combined code\main.c
 	<stdio.h>
 	<stdlib.h>
-	<string.h>
-	<ctype.h>
-	<time.h>
+	"BankSystem.h"
+
+1703977310 d:\electronics\bank-management-system\combined code\banksystem.h
 	<stdio.h>
 	<stdlib.h>
 	<string.h>

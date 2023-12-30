@@ -558,8 +558,6 @@ void Modify(void)
     while(choice1 == 'y' || choice1 == 'y' );
 }
 
-<<<<<<< HEAD
-}
 
 ///Search the user names using strstr function
 ///Sets the upper case as a reference to avoid case sensitivity
@@ -597,8 +595,6 @@ void advSearch(void)
     }
     while (choice == 'y' || choice == 'Y');
 }
-=======
->>>>>>> bcb7cf7b6515a0e3095cd978b9db05d0a4227149
 
 void Query(void)
 {
@@ -645,45 +641,6 @@ void Query(void)
 
     }
     while((choise== 'y' || choise== 'Y'));
-}
-
-
-
-///Search the user names using strstr function
-///Sets the upper case as a reference to avoid case sensitivity
-void advSearch(void)
-{
-    char search_key[20];
-    char buffer[20];
-    char choice = 'y';
-
-    do
-    {
-        printf("%s", "Enter the search keyword: ");
-        gets(search_key);
-
-        int found = 0;
-
-        printf("%s", "Search results:\n\n");
-        for (size_t i = 0; i < acCount; i++)
-        {
-            strcpy(buffer, (accounts + i)->username);
-            if (strstr(StrToUpper(buffer), StrToUpper(search_key)) != NULL)
-            {
-                printUser((accounts + i));
-                found = 1;
-            }
-        }
-
-        if (found == 0)
-        {
-            printf("No matches are found!\n");
-        }
-        printf("Do you want to search for something else?(Y/N): ");
-        scanf("%c", &choice);
-        getchar();
-    }
-    while (choice == 'y' || choice == 'Y');
 }
 
 
