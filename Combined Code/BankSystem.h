@@ -242,6 +242,7 @@ void Modify(void)
             if(choice2 == 'Y' || choice2 == 'y')
             {
                 Add();
+                flag=0;
             }
             else
                 flag=0;
@@ -251,7 +252,7 @@ void Modify(void)
         else
         {
             int place = loadAccIndex(accReqMod);
-            printf("Do you want to add on (N for Number,U for Username,E for E-mail: ");
+            printf("Do you want to modify on (N for Number,U for Username,E for E-mail: ");
             scanf("%c", &choice2);
             getchar();
             if(choice2 == 'U' || choice2 == 'u')
@@ -289,7 +290,8 @@ void Modify(void)
             /// if the user entered neither of the choices
             else
             {
-                printf("invalid choice");
+                printf("invalid choice\n");
+                flag=0;
             }
 
         }
@@ -301,6 +303,8 @@ void Modify(void)
         getchar();
     }
     while(choice1 == 'y' || choice1 == 'y' );
+}
+
 }
 
 ///Search the user names using strstr function
