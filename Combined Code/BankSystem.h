@@ -498,7 +498,7 @@ void Modify(void)
                 flag=0;
             }
             else
-                flag=0;
+                {flag=2;}
         }
 
         /// modify the required account
@@ -551,9 +551,11 @@ void Modify(void)
         if(flag == 1)
           {Save();
           }
-        printf("\nDo want to modify again?!!\n(Y for yes, N for no)");
+        if (flag != 2)
+        {printf("\nDo want to modify again?!!\n(Y for yes, N for no)");
         scanf("%c", &choice1);
         getchar();
+        }
     }
     while(choice1 == 'y' || choice1 == 'y' );
 }
