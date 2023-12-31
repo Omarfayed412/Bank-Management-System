@@ -694,7 +694,7 @@ void WithDraw(void)
                 printf("Couldn't Find File!\n");
                 exit(-1);
             }
-            fprintf(accounts[index].f_report,"Withdraw %lf$\n",amount2);
+            fprintf(accounts[index].f_report,"Withdraw %0.2lf$\n",amount2);
             fclose(accounts[index].f_report);
 
             Save();
@@ -760,7 +760,7 @@ void Deposit(void)
                 exit(-1);
             }
 
-            fprintf(accounts[index].f_report, "Deposit %lf$\n", amount2);
+            fprintf(accounts[index].f_report, "Deposit %0.2lf$\n", amount2);
             fclose(accounts[index].f_report);
             printf("Transaction successful :)\n");
             Save();
@@ -845,7 +845,7 @@ void Transfer(void)
                     exit(-1);
                 }
 
-                fprintf(accounts[index1].f_report, "You sent %lf$ to %s", amount2, account_number2);
+                fprintf(accounts[index1].f_report, "You sent %0.2lf$ to %s\n", amount2, account_number2);
                 fclose(accounts[index1].f_report);
 
                 accounts[index2].f_report = fopen(fileName2, "a");
@@ -854,7 +854,7 @@ void Transfer(void)
                     printf("Couldn't Find File!\n");
                     exit(-1);
                 }
-                fprintf(accounts[index2].f_report, "You received %lf$ from %s", amount2, account_number2);
+                fprintf(accounts[index2].f_report, "You received %0.2lf$ from %s\n", amount2, account_number2);
                 fclose(accounts[index2].f_report);
 
                 Save();
@@ -927,6 +927,8 @@ void Report(void)
         }
         fclose(accounts[index].f_report);
     }
+    Menu();
+
 }
 
 
@@ -1268,6 +1270,7 @@ int AccountExistenceCheck (char *accountNumber)
             return flag;
         }
     }
+    printf("%s","account is not exist\n");
     return flag;
 }
 
@@ -1301,11 +1304,12 @@ int checkBalance(char *BalStr)
 {
     for (size_t i = 0; *(BalStr + i) != '\0'; i++)
     {
-        if (!(isdigit(*(BalStr + i)) == 1))
+        if (!((isdigit(*(BalStr + i)) == 1) ||  (*(BalStr + i)=='.' )))
         {
             printf("Invalid Balance!(Should be numbers ONLY)\n");
             return 0;
         }
+
     }
     return 1;
 }
