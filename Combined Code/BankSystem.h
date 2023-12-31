@@ -60,6 +60,7 @@ void Transfer(void);
 void Report(void);
 void Sort(void);
 void Save(void);
+void Manual(void);
 
 ///Helping functions for struct and arrays manipulation
 int   checkAccountNo(char *accStr);
@@ -273,9 +274,9 @@ void Menu(void)
     {
         flag = 0;
         printf("%s", "\n\t******** Main Menu (0o0) ********\n");
-        printf("%s", "Please select one of the following options(Enter the EXACT name of desired option):\n");
+        printf("%s", "Please select one of the following options(Enter the EXACT name of desired option as shown below):\n");
         printf("%s", " - ADD\n - DELETE\n - MODIFY\n - SEARCH\n - ADVANCED SEARCH\n - WITHDRAW\n");
-        printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - QUIT\n");
+        printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - Manual\n - QUIT\n");
         printf("Desired option: ");
         gets(choice);
         StrToUpper(choice);
@@ -309,6 +310,9 @@ void Menu(void)
 
         else if (strcmp(choice, "PRINT") == 0)
             Sort();
+
+        else if (strcmp(choice, "MANUAL") == 0)
+            Manual();
 
         else if (strcmp(choice, "QUIT") == 0)
         {
@@ -1158,6 +1162,82 @@ void Save(void)
     }
 }
 
+
+///Printing the user manual that contains details about using the program
+void Manual(void){
+    printf("\n===========================\nWelcome to the User Manual\n===========================\n\n");
+    printf("You'll find a detailed explanation of each function in this program along with the guidelines for data to be entered\n");
+
+    printf("\n1) ADD:\n-------\n - This function is used to add new account to the database with 0.0 balance\n");
+    printf(" - It asks you to enter the account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - After entering an existing account number you will be asked to enter the mobile phone which must be 11-digits long \n and doesn't contain any characters\n");
+    printf(" - Then you enter the E-mail address which is one of our supported platforms (Gmail, Outlook, Alexu.edu.eg, Yahoo) and\n it must not contain ','\n");
+    printf(" - To save your data to the database you should type Y or y when the program asks you if you want to save\n");
+    printf(" - You are allowed to add other accounts without going back to the menu by typing Y or y when the program asks you\n");
+    printf(" - If you want to add balance use the function Deposit\n");
+
+    printf("\n 2) Delete:\n-----------\n - This function is used to delete accounts in the database\n");
+    printf(" - It asks you to enter the account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - This function deletes ONLY accounts that have 0.0 balance\n");
+    printf(" - To save your data to the database you should type Y or y when the program asks you if you want to save\n");
+    printf(" - You are allowed to delete other accounts without going back to the menu by typing Y or y when the program asks you\n");
+
+    printf("\n 3) Modify:\n-----------\n - This function is used to modify accounts in the database\n");
+    printf(" - It asks you to enter the account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - After entering an existing account number you are to choose between three options Name, Email, Mobile number\n");
+    printf(" - To save your data to the database you should type Y or y when the program asks you if you want to save\n");
+    printf(" - You are allowed to modify other accounts without going back to the menu by typing Y or y when the program asks you\n");
+
+    printf("\n 4) Search:\n-----------\n - This function is used to search for an entered account number in the database\n");
+    printf(" - It asks you to enter the account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - You are allowed to search for other accounts without going back to the menu \n by typing Y or y when the program asks you\n");
+
+    printf("\n 5) Advanced Search:\n--------------------\n - This function is used to search for a keyword related to user names in the database\n");
+    printf(" - It asks you to enter the Keyword to search for\n");
+    printf(" - All the accounts that have the keyword in the user name will be printed on the screen\n");
+    printf(" - You are allowed to search for other Keywords without going back to the menu \n by typing Y or y when the program asks you\n");
+
+    printf("\n 6) Withdraw:\n-------------\n - This function is used to withdraw money from an account in the database\n");
+    printf(" - It asks you to enter the account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - After entering an existing account number you will be asked to enter the amount of money to be withdrawn\n");
+    printf(" - The amount of money shouldn't exceed 10000$ per transaction and must be digits ONLY\n");
+    printf(" - To save your data to the database you should type Y or y when the program asks you if you want to save\n");
+    printf(" - You are allowed to withdraw again without going back to the menu by typing Y or y when the program asks you\n");
+
+    printf("\n 7) Deposit:\n------------\n - This function is used to deposit money from to an account in the database\n");
+    printf(" - It asks you to enter the account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - After entering an existing account number you will be asked to enter the amount of money to be depositted\n");
+    printf(" - The amount of money shouldn't exceed 10000$ per transaction and must be digits ONLY\n");
+    printf(" - To save your data to the database you should type Y or y when the program asks you if you want to save\n");
+    printf(" - You are allowed to deposit again without going back to the menu by typing Y or y when the program asks you\n");
+
+    printf("\n 8) Transfer:\n-------------\n - This function is used to transfer money from to an account to another account in the database\n");
+    printf(" - It asks you to enter the sender account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - It asks you to enter the receiver account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - After entering an existing account numbers you will be asked to enter the amount of money to be transfered\n");
+    printf(" - The amount of money shouldn't exceed 10000$ per transaction and must be digits ONLY\n");
+    printf(" - To save your data to the database you should type Y or y when the program asks you if you want to save\n");
+    printf(" - You are allowed to transfer again without going back to the menu by typing Y or y when the program asks you\n");
+
+    printf("\n 9) Report:\n-----------\n - This function is used to print the history of last five transactions for an account in the database\n");
+    printf(" - It asks you to enter the account number which MUST be 10-digits long and doesn't contain any characters\n");
+    printf(" - The history for the transactions will be presented on the screen\n");
+    printf(" - You are allowed to print the report for other account without going back to the menu \n by typing Y or y when the program asks you\n");
+
+    printf("\n 10) Print:\n-----------\n - This function is used to print the accounts in the database in a sorted manner\n");
+    printf(" - It asks you to choose the way of sorting (By date, By names, By balance)\n");
+    printf(" - The program will ask you to choose the arrangement order -> A for Ascending -> Z for descending\n");
+    printf(" - You are allowed to print accounts without going back to the menu \n by typing Y or y when the program asks you\n");
+
+
+    printf("\n 11) Manual:\n------------\n - If you have reached this point already, we bet that you figured it out yourself :)\n");
+
+    printf("\n 12) Quit:\n----------\n  - Used to quit the program\n\n");
+
+    printf("13) Menu handling:\n------------------\n  - You are free to use upper or lower case letters when choosing the desired option\n");
+    printf(" - You have to write the operation name EXACTLY as shown on the menu screen\n");
+    printf(" - You will find yourself at the menu right after logging in and after performing any operation from the operations listed above\n");
+}
 
 /// return the index of the required client
 int loadAccIndex(char *accountNumber)
