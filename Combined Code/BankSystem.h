@@ -71,7 +71,7 @@ int   checkBalance(char *BalStr);
 int   loadAccIndex(char *accountNumber);
 char *convertMonth(int monthnum);
 char *StrToUpper(char *str);
-int  *sortByData(void);
+int  *sortByDate(void);
 int  *sortByBalance(void);
 int  *sortByName(void);
 void fillArray(int *ptr);
@@ -200,7 +200,7 @@ void loadAccounts(void)
 
 
 ///Retrieving data from the text file and constructing the instances based on data collected
-void retrieveData(void)
+/*void retrieveData(void)
 {
     FILE *fptr = fopen("accounts.txt", "r");
     if (fptr == NULL)
@@ -261,7 +261,7 @@ void retrieveData(void)
     ///Set the global accounts counter
     acCount = i - 1;
 }
-
+*/
 
 ///This function is main caller for all the other functions in the program
 ///Gives you a list of options to choose from and then interprets the entered data
@@ -336,7 +336,7 @@ void Add(void)
     /// variable suitable for storing the calender time since 1970
     time_t t = time(NULL);
     /// instant of time structure and local function breaks the time since 1970 into the structure variables
-    struct tm tm = *localtime(&t);
+    struct tm Newtime = *localtime(&t);
 
     char account_number[11];
     char mobile_number[12];
@@ -345,7 +345,7 @@ void Add(void)
     int flag_1 = 0, flag_2 = 0;
     char email_adresss[30];
     double balance = 0;
-    Date data;
+    Date date2;
 
     do
     {
@@ -359,10 +359,7 @@ void Add(void)
             gets(account_number);
 
             flag_1 = checkAccountNo(account_number);
-            if (flag_1 == 0)
-            {
-                continue;
-            }
+
             flag_2 = AccountExistenceCheck(account_number);
             if(flag_2 == 0)
             {
@@ -399,15 +396,15 @@ void Add(void)
         }
         while(flag_1 == 0);
         /// the data of adding the account
-        printf("%d",tm.tm_year);
-        data.year = tm.tm_year + 1900;
-        data.month = tm.tm_mon + 1;
+        ///    printf("%d",Newtime.tm_year);
+        date2.year = Newtime.tm_year + 1900;
+        date2.month = Newtime.tm_mon + 1;
         /// making an instant of the data
-        //     Account *new_client = malloc(sizeof(Account));
-        //   ConstructAccount(new_client, mobile_number, account_number, username, email_adresss, &balance, &data);
+        ///     Account *new_client = malloc(sizeof(Account));
+        ///   ConstructAccount(new_client, mobile_number, account_number, username, email_adresss, &balance, &data);
         /// increasing the number of accounts
         ++acCount;
-        constructAccount(&accounts[acCount - 1], mobile_number, account_number, username, email_adresss, balance, &data);
+        constructAccount(&accounts[acCount - 1], mobile_number, account_number, username, email_adresss, balance, &date2);
         Save();
         ///choice for adding ,more accounts
         printf("Do you want to add more accounts?(Y for Yes/N for No): ");
@@ -669,7 +666,7 @@ void WithDraw(void)
         if(AccountExistenceCheck(account_number) == 0)//acc exist
         {
             int index = loadAccIndex(account_number);
-            printf("Your balance= %lf$\n", accounts[index].balance);
+            printf("Your balance= %.2lf$\n", accounts[index].balance);
 
             do
             {
@@ -999,7 +996,7 @@ void Sort(void)
         }
         else if (c == 'D' || c == 'd')
         {
-            Indices = sortByData();
+            Indices = sortByDate();
             printf("%s","Enter [N] to be sorted from the newest client , [P] to be sorted from the our past client : ");
             do
             {
@@ -1094,7 +1091,7 @@ void fillArray(int *ptr)
 }
 
 
-int * sortByData(void)
+int * sortByDate(void)
 {
     int *Indices = malloc(sizeof(int)*acCount);
     fillArray(Indices);
@@ -1270,7 +1267,7 @@ int AccountExistenceCheck (char *accountNumber)
             return flag;
         }
     }
-    printf("%s","account is not exist\n");
+    ///printf("%s","account is not exist\n");
     return flag;
 }
 
