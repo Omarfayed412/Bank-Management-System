@@ -38,11 +38,11 @@ This operation gives the user the privilege to delete an account but this accoun
 After locating the account by using locateAccount() function it swaps the struct saved in this index in the array of structs with the next account until it makes it at the end of the accounts in the array. After then, It decrements the acCount which holds the number of accounts. So the next account to be added will overwrite the data of that account to be deleted and even if there wasn’t an account to be added the function Save() will save all the account except it.
 ### F. Modifying Data:
 Our program supports modifying your data by calling Modify() function but only the User name, Mobile number and email address. It has the same scenario as Add(), checks account number then gives you the options to modify the desired data. The function calls loadAccIndex() function which returns the index of the given account number. You can save the new data by typing Y or y when you’re asked. You have the ability to modify other accounts without returning to main.
-### G.Transfering Money:
+### G. Transfering Money:
 Let’s get more Financial! You can transfer an amount of money not exceeding 10000$ per transaction by calling the function Transfer(). This function asks you to enter the sender and receiver account numbers and performs validation and existence checks. It asks you to enter the amount of money to be transferred which has to be numbers only and smaller than or equal your balance. It uses also the function loadAccIndex() to locate the two accounts, add the amount to reciever balance and subtract it from sender balance.
 After the transaction it asks you whether you want to save or not same as mentioned before. Whenever you do any transaction a file with the account number as its name is created as a history log for your operations.
 You can transfer money again without returning back to the main.
-### H.Depositting Money:
+### H. Depositting Money:
 Same as Transfer() but it calls Deposit() function which takes one account number. It has the same restrictions as transfer in terms of max amount per transaction. You can save or not as the rest and repeat the operation if you want to.
 Remember that a file with its name same as the account number is created containig the history of your transactions.
 ### I. Withdrawing Money:
