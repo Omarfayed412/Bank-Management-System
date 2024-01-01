@@ -7,6 +7,7 @@ Each Account has an account number, name, mobile, email address, balance, and da
 We have written this code following naming conventions and clean code concepts to make the code work in an optimized and efficient way. Many approaches have been followed to apply optimization techniques to reduce memory consumption and decrease the time complexity.
 We also put into consideration the security standards that may keep our program immune to cyberthreats and vulnerabilities.
 
+
 ## Program Flow & Functions
 Throughout this section you’ll get a clear overview over the
 implementation of the functions in this program.
@@ -60,11 +61,12 @@ The temporary array is created using the function fillArray() which reserves a p
 ### M. Report for Transactions:
 By calling Report() function it opens the text file of an entered and checked account number from the user then it prints out the last 5 transactions stored in the file named by account number.
 It counts number of lines of the file of history then subtracts 5 from it to start from the last five lines then it calls the function fseek() to return to the start of the file to count from the beginning. You can repeat this operation too.
-### N.User Manual:
+### N. User Manual:
 Holds the user manual data and prints it on screen to help the user on how to deal with the program. It includes all the operations allowed for users and restrictions of input data.
-### O.Saving Data:
+### O. Saving Data:
 We have mentioned the function Save() nearly in all the operations that can change data in the database. This function takes out all the data stored with the array of strcuts and print it in the same order of cells as it was retrieved at the beginning of the program.
 It uses fprintf() and fopen() to open the accounts.txt file
+
 
 ## Contributors
 - [Omar Fayed](https://www.github.com/Soupaul)
