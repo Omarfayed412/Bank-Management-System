@@ -276,7 +276,7 @@ void Menu(void)
         printf("%s", "\n\t******** Main Menu (0o0) ********\n");
         printf("%s", "Please select one of the following options(Enter the EXACT name of desired option as shown below):\n");
         printf("%s", " - ADD\n - DELETE\n - MODIFY\n - SEARCH\n - ADVANCED SEARCH\n - WITHDRAW\n");
-        printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - Manual\n - QUIT\n");
+        printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - MANUAL\n - QUIT\n");
         printf("Desired option: ");
         gets(choice);
         StrToUpper(choice);
