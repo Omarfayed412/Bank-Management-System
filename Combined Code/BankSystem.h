@@ -341,7 +341,7 @@ void Add(void)
     char account_number[11];
     char mobile_number[12];
     char username[20];
-    char choice = 'y';
+    char choice;
     int flag_1 = 0, flag_2 = 0;
     char email_adresss[30];
     double balance = 0;
@@ -410,8 +410,9 @@ void Add(void)
         printf("Do you want to add more accounts?(Y for Yes/N for No): ");
         scanf("%c", &choice);
         getchar();
+
     }
-    while(choice == 'y' || choice == 'Y');
+    while(choice == 'Y' || choice == 'y');
 }
 
 
@@ -1334,32 +1335,44 @@ int checkName(char *name)
 ///returns 0 if the number isn't valid
 int checkEmail(char *email)
 {
-    if (!(strstr(email, "@gmail.com") == NULL))
-    {
-
-        return 1;
+    int counter = 0;
+    for(size_t i = 0; *(email + i) != '\0'; i++){
+        if (*(email + i) == '@')
+            counter++;
     }
-    if (!(strstr(email, "@alexu.edu.eg") == NULL))
+    if (counter > 1)
     {
-
-        return 1;
-    }
-    if (!(strstr(email, "@outlook.com") == NULL))
-    {
-
-        return 1;
-    }
-
-    if (!(strstr(email, "@yahoo.com") == NULL))
-    {
-
-        return 1;
-    }
-
-    else
-    {
-        printf("Invalid E-mail!!!\n");
+        printf("Invalid Email!(Shouldn't contain more than one @)\n");
         return 0;
+    }
+    else {
+        if (!(strstr(email, "@gmail.com") == NULL))
+        {
+
+            return 1;
+        }
+        if (!(strstr(email, "@alexu.edu.eg") == NULL))
+        {
+
+            return 1;
+        }
+        if (!(strstr(email, "@outlook.com") == NULL))
+        {
+
+            return 1;
+        }
+
+        if (!(strstr(email, "@yahoo.com") == NULL))
+        {
+
+            return 1;
+        }
+
+        else
+        {
+            printf("Invalid E-mail!!!\n");
+            return 0;
+        }
     }
 }
 
@@ -1461,6 +1474,33 @@ char *convertMonth(int monthnum)
         return "December";
     }
 }
+/*int checkinput(char *input)
+{
+if(strcmp(input,"Y")==0)
+{
+return 1;
+}
+else if(strcmp(input,"y")==0)
+{
+return 1;
+}
+else if(strcmp(input,"yes")==0)
+{
+return 1;
+}
+else if(strcmp(input,"Yes")==0)
+{
+return 1;
+}
+else if(strcmp(input,"Yes")==0)
+{
+return 1;
+}
+else
+{
+return 0;
+}
 
-
+}
+*/
 #endif // BANKSYSTEM_H_INCLUDED

@@ -5,7 +5,7 @@
 int main()
 {
     printf("======================\nBank Management System\n======================\n");
-    //Login();
+    Login();
 
     loadAccounts();
 
