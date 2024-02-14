@@ -14,11 +14,11 @@ int main()
     ///and collecting it into an array of objects
     //retrieveData();
 
-    //Testing the collected data
+    /*//Testing the collected data
    for (size_t i = 0; i < acCount; i++)
     {
         printUser(accounts + i);
-    }
+    }*/
 
     Menu();
     return 0;
