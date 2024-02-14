@@ -16,6 +16,7 @@ each cell.
 ### A. Logging in
 First step of our program is logging in for the employees stored within the file users.txt. The program creates an array of structs for users with a password and username. The function readUser() is called to open the file and read the data stored in it and store it in the array of stucts of users.
 After then, the login() function takes place by checking the entered username and password matches the ones stored in the database.
+![Screenshot 2024-02-14 231400](https://github.com/Omarfayed412/Bank-Management-System/assets/69699199/1d5f2fb7-cddd-4767-9e15-10ab5e4905ea)
 ### B. Loading Data:
 After a successful login the program calls loadAccounts() which should start loading the data of the accounts stored inside the accounts.txt file. By applying this method we can ensure that the data wont be retrieved if the user is not authorized which applies the concept of least privilege. The function stores the data in an array of structs of type
 Account. Main algorithm goes by reading a line from the file then passeing this line to strtok() which separates the line according to the comma delimiter. Each time the initial token starts a series of tests is done to assign all the strcut attributes until the token equal NULL.
@@ -26,6 +27,7 @@ After loading the data of the accounts stored in the database we move to the act
 It asks the user to enter the option desired then the user is required to enter the name of the option as shown on the screen. The menu acts as a CLI it takes a string and converts it to upper case using StrToUpper() function which makes all the string characters in upper case.
 We chose this approach to make the program not case sensitive so the user is able to enter the option in any case they want.
 According to the chosen operation the function calls the operation function then after the function ends and is popped off from the stack it returns to the while loop of the Menu().
+![Screenshot 2024-02-14 231504](https://github.com/Omarfayed412/Bank-Management-System/assets/69699199/0bf81cb4-d18d-4304-a7fd-9a6a94d09c1b)
 ### D. Adding Users:
 So the first operation we got is the Add() which adds a user to the database. The function asks the user to enter a valid account number and it keeps asking the user until they enter an account number that doesn’t exist in the database and is valid.
 A valid account number is checked by checkAccountNo() which returns 1 if valid ;otherwise, it returns 0. A vild account number means it has a length of 10-digits and doesn’t contain any letters or special characters.
