@@ -10,6 +10,13 @@
 #define sizeUsers 50
 #define sizeU 50
 
+#ifdef _WIN32
+    #define CLEAR "cls"
+#else
+    #define CLEAR "clear"
+#endif
+
+
 
 ///Struct that holds date
 typedef struct
@@ -266,6 +273,12 @@ void loadAccounts(void)
 ///This function is main caller for all the other functions in the program
 ///Gives you a list of options to choose from and then interprets the entered data
 ///to known commands like a CLI
+// clr() clears the screen everytime a new function is called
+void clr()
+{
+    system(CLEAR);
+}
+
 void Menu(void)
 {
     char choice[20];
@@ -273,47 +286,43 @@ void Menu(void)
     do
     {
         flag = 0;
-        printf("%s", "\n\t******** Main Menu (0o0) ********\n");
-        printf("%s", "Please select one of the following options(Enter the EXACT name of desired option as shown below):\n");
+        clr();
+        printf("%s", "=================================\n");
+        printf("%s", "******** Main Menu (0o0) ********\n");
+        printf("%s", "=================================\n");
+        printf("%s", "Please select one of the following options (Enter the EXACT name of the desired option as shown below):\n");
         printf("%s", " - ADD\n - DELETE\n - MODIFY\n - SEARCH\n - ADVANCED SEARCH\n - WITHDRAW\n");
         printf("%s", " - DEPOSIT\n - TRANSFER\n - REPORT\n - PRINT\n - MANUAL\n - QUIT\n");
         printf("Desired option: ");
         gets(choice);
-        StrToUpper(choice);
+
+        // Convert input to uppercase
+        for (int i = 0; i < strlen(choice); i++) {
+            choice[i] = toupper(choice[i]);
+        }
 
         if (strcmp(choice, "ADD") == 0)
             Add();
-
         else if (strcmp(choice, "DELETE") == 0)
             deleteAccount();
-
         else if (strcmp(choice, "MODIFY") == 0)
             Modify();
-
         else if (strcmp(choice, "SEARCH") == 0)
             Query();
-
         else if (strcmp(choice, "ADVANCED SEARCH") == 0)
             advSearch();
-
         else if (strcmp(choice, "WITHDRAW") == 0)
             WithDraw();
-
         else if (strcmp(choice, "DEPOSIT") == 0)
             Deposit();
-
         else if (strcmp(choice, "TRANSFER") == 0)
             Transfer();
-
         else if (strcmp(choice, "REPORT") == 0)
             Report();
-
         else if (strcmp(choice, "PRINT") == 0)
             Sort();
-
         else if (strcmp(choice, "MANUAL") == 0)
             Manual();
-
         else if (strcmp(choice, "QUIT") == 0)
         {
             printf("Thank you for using our system :)\nExiting...\n");
